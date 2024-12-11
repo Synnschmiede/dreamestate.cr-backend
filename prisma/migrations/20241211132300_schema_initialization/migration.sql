@@ -1,8 +1,33 @@
 -- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
+
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'USER');
+
+-- CreateEnum
 CREATE TYPE "PostingStatus" AS ENUM ('POSTED', 'NOT_POSTED');
 
 -- CreateTable
-CREATE TABLE "data_management" (
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "first_name" TEXT NOT NULL,
+    "last_name" TEXT,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "contact_number" TEXT,
+    "profile_pic" TEXT,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
+    "role" "UserRole" NOT NULL DEFAULT 'USER',
+    "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+    "password_changed_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "records" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "campaign" TEXT,
@@ -62,5 +87,34 @@ CREATE TABLE "data_management" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "data_management_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "records_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateTable
+CREATE TABLE "Image" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "cloud_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "otp" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "otp" INTEGER NOT NULL,
+    "expires_at" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "otp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "otp_otp_key" ON "otp"("otp");
