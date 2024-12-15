@@ -13,3 +13,5 @@ router.post(
     validateRequest(PropertyValidations.createPropertyValidationSchema),
     PropertyControllers.createProperty
 );
+
+export const PropertyRoutes = router;

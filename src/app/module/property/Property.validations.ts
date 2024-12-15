@@ -50,14 +50,14 @@ const propertyFeaturesSchema = z.object({
 
 const createPropertyValidationSchema = z.object({
     title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().optional(),
     price: z.number().min(0, "Price cannot be negative"),
-    property_type: z.enum(["APARTMENT", "HOUSE", "CONDO", "VILLA", "LAND"]),
-    status: z.enum(["AVAILABLE", "SOLD", "RENTED"]),
+    property_type: z.enum(["APARTMENT", "HOUSE", "VILLA", "LAND"]).optional(),
+    status: z.enum(["AVAILABLE", "SOLD", "RENTED"]).optional(),
     images: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     overview: propertyOverviewSchema.optional(),
-    contactInfo: propertyContactInfoSchema,
+    contactInfo: propertyContactInfoSchema.optional(),
     documents: z.array(z.string()).optional(),
     location: propertyLocationSchema.optional(),
     property_details: propertyDetailsSchema.optional(),
