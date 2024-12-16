@@ -53,6 +53,7 @@ const createPropertyValidationSchema = z.object({
         title: z.string().min(1, "Title is required"),
         description: z.string().optional(),
         price: z.number().min(0, "Price cannot be negative"),
+        feature_image: z.string(),
         property_type: z.enum(["APARTMENT", "HOUSE", "VILLA", "LAND"]).optional(),
         status: z.enum(["AVAILABLE", "SOLD", "RENTED"]).optional(),
         images: z.array(z.string()).optional(),

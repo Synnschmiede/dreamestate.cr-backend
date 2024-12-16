@@ -44,6 +44,7 @@ export interface IProperty {
     title: string;
     description: string;
     price: number;
+    feature_image: string;
     property_type: "APARTMENT" | "HOUSE" | "VILLA" | "LAND";
     status: "AVAILABLE" | "SOLD" | "RENTED";
     images?: string[];

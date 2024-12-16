@@ -136,6 +136,7 @@ model Properties {
   title           String
   description     String?
   price           Float
+  feature_image   String
   property_type   PropertyType?
   status          String?
   images          String[]      @default([])
