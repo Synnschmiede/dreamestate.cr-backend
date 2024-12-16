@@ -132,44 +132,44 @@ enum PostingStatus {
 // propertiy schema starts
 
 model Properties {
-  id              String      @id @default(uuid())
+  id              String        @id @default(uuid())
   title           String
   description     String?
   price           Float
-  propertyType    PropertyType?
+  property_type   PropertyType?
   status          String?
-  images          String[]    @default([])
-  tags            String[]    @default([])
+  images          String[]      @default([])
+  tags            String[]      @default([])
   overview        Json?
-  contactInfo     ContactInfo?
-  documents       String[]    @default([])
-  location        Location?
+  documents       String[]      @default([])
   propertyDetails Json?
   features        Json?
+  contact_info_id String?       @unique
+  location_id     String?       @unique
+  location        Location?     @relation(fields: [location_id], references: [id])
+  contact_info    ContactInfo?  @relation(fields: [contact_info_id], references: [id])
 
   @@map("properties")
 }
 
 model ContactInfo {
-  id          String     @id @default(uuid())
-  property_id String @unique
-  name        String
-  email       String
-  phone       String
-  property    Properties @relation(fields: [property_id], references: [id])
+  id         String      @id @default(uuid())
+  name       String
+  email      String
+  phone      String
+  properties Properties?
 
   @@map("contact_info")
 }
 
 model Location {
-  id          String     @id @default(uuid())
-  property_id String @unique
-  address     String
-  city        String
-  state       String
-  zip         String
-  country     String
-  property    Properties @relation(fields: [property_id], references: [id])
+  id         String      @id @default(uuid())
+  address    String
+  city       String
+  state      String
+  zip        String
+  country    String
+  properties Properties?
 
   @@map("location")
 }

@@ -1,6 +1,7 @@
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { PropertyServices } from "./Property.services";
+import httpStatus from "http-status";
 
 const createProperty = catchAsync(async (req, res, next) => {
     const result = await PropertyServices.createProperty(req.body);
