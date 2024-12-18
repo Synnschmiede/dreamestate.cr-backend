@@ -128,3 +128,58 @@ enum PostingStatus {
   POSTED
   NOT_POSTED
 }
+
+// propertiy schema starts
+
+model Properties {
+  id              String        @id @default(uuid())
+  title           String
+  description     String?
+  price           Float
+  feature_image   String
+  property_type   PropertyType?
+  status          String?
+  images          String[]      @default([])
+  tags            String[]      @default([])
+  overview        Json?
+  documents       String[]      @default([])
+  propertyDetails Json?
+  features        Json?
+  contact_info_id String?       @unique
+  location_id     String?       @unique
+  location        Location?     @relation(fields: [location_id], references: [id])
+  contact_info    ContactInfo?  @relation(fields: [contact_info_id], references: [id])
+
+  @@map("properties")
+}
+
+model ContactInfo {
+  id         String      @id @default(uuid())
+  name       String
+  email      String
+  phone      String
+  properties Properties?
+
+  @@map("contact_info")
+}
+
+model Location {
+  id         String      @id @default(uuid())
+  address    String
+  city       String
+  state      String
+  zip        String
+  country    String
+  properties Properties?
+
+  @@map("location")
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  VILLA
+  LAND
+}
+
+// propertiy schema ends
