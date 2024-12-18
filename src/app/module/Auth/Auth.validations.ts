@@ -49,13 +49,13 @@ const loginUserValidationSchema = z.object({
 
 const resetPasswordValidationSchema = z.object({
   body: z.object({
-    oldPassword: z
+    old_password: z
       .string({
         invalid_type_error: "Old password should be a text",
         required_error: "Old password is required",
       })
       .min(1, { message: "Old password must be required" }),
-    newPassword: z
+    new_password: z
       .string({
         invalid_type_error: "New password should be a text",
         required_error: "New password is required",

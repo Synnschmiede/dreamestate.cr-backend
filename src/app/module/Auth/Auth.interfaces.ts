@@ -24,8 +24,8 @@ export type TLoginCredential = {
 };
 
 export type TResetPasswordPayload = {
-  oldPassword: string;
-  newPassword: string;
+  old_password: string;
+  new_password: string;
 };
 
 export type TForgotPasswordPayload = {
