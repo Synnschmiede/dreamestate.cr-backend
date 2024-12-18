@@ -85,3 +85,63 @@
  *         description: If request body is invalid
  *
  */
+
+// Login User
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: email@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: If user created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User logged in successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                     email:
+ *                       type: string
+ *                       example: email@example.com
+ *                     contact_number:
+ *                       type: string
+ *                       example: 1234567890
+ *                     profile_pic:
+ *                       type: string
+ *                       example: https://example.com/profile.jpg
+ *                     role:
+ *                       type: string
+ *                       example: USER
+ *                     token:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZSI6IlVTRVIiLCJwYXNzd29yZF9jaGFuZ2VkX2F0IjoxNzM0NTQ1MDc2LCJpYXQiOjE3MzQ1NDY3OTgsImV4cCI6MTczNTE1MTU5OH0.OWbTunoEXIRCdHy6JeUxVOdR3d_ZPww6x8gjeCVw5yQ
+ *       400:
+ *         description: If request body is invalid
+ *
+ */
