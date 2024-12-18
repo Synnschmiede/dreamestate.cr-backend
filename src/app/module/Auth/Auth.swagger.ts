@@ -66,6 +66,12 @@
  *                     contact_number:
  *                       type: string
  *                       example: 1234567890
+ *                     profile_pic:
+ *                       type: string
+ *                       example: null
+ *                     role:
+ *                       type: string
+ *                       example: USER
  *                     status:
  *                       type: string
  *                       example: ACTIVE
