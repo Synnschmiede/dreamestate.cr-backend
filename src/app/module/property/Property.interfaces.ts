@@ -1,4 +1,5 @@
 import { PropertyStatus, PropertyType } from "@prisma/client";
+import { TFile } from "../../interfaces/file";
 
 export interface PropertyContactInfo {
   name: string;
@@ -49,3 +50,8 @@ export interface IProperty {
   property_details?: IPropertyDetails;
   features?: IPropertyFeatures;
 }
+
+export type TPropertyFiles = {
+  feature_image?: TFile[];
+  images?: TFile[];
+};

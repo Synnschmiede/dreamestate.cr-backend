@@ -27,12 +27,14 @@ model User {
   password_changed_at DateTime   @default(now())
   created_at          DateTime   @default(now())
   updated_at          DateTime   @updatedAt
+  Property            Property[]
 
   @@map("users")
 }
 
 model Property {
   id               String         @id @default(uuid())
+  user_id          String?
   title            String
   slug             String
   description      String?
@@ -47,6 +49,8 @@ model Property {
   features         Json?
   contact_info     ContactInfo?
   location         Location?
+
+  uploaded_by User? @relation(fields: [user_id], references: [id])
 
   @@map("properties")
 }
@@ -81,7 +85,7 @@ model Image {
   id         String   @id @default(uuid())
   name       String
   path       String
-  cloud_id   String
+  bucket_id  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

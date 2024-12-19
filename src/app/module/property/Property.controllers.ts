@@ -4,15 +4,15 @@ import { PropertyServices } from "./Property.services";
 import httpStatus from "http-status";
 
 const createProperty = catchAsync(async (req, res, next) => {
-    const result = await PropertyServices.createProperty(req.body);
-    sendResponse(res, {
-        statusCode: httpStatus.CREATED,
-        success: true,
-        message: "Property created successfully",
-        data: result,
-    });
+  const result = await PropertyServices.createProperty(req);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Property created successfully",
+    data: result,
+  });
 });
 
 export const PropertyControllers = {
-    createProperty
+  createProperty,
 };

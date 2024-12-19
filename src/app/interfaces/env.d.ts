@@ -13,5 +13,8 @@ declare namespace NodeJS {
     CLOUD_NAME: string;
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_API_SECRET: string;
+    SUPABASE_BUCKET_URL: string;
+    SUPABASE_BUCKET_KEY: string;
+    SUPABASE_BUCKET_NAME: string;
   }
 }
