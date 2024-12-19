@@ -1,72 +1,95 @@
+import { PropertyStatus, PropertyType } from "@prisma/client";
 import { z } from "zod";
 
-const propertyLocationSchema = z.object({
-    city: z.string(),
-    state: z.string(),
-    country: z.string(),
-    postalCode: z.string().optional(),
-    addressLine1: z.string().optional(),
-    addressLine2: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
-});
-
 const propertyContactInfoSchema = z.object({
-    name: z.string(),
-    email: z.string().email("Invalid email format"),
-    phone: z.string().optional(),
+  name: z.string({ invalid_type_error: "Name should be a text" }),
+  email: z.string().email("Invalid email"),
+  phone: z
+    .string({ invalid_type_error: "Phone number should be a text" })
+    .optional(),
 });
 
-const propertyOverviewSchema = z.object({
-    updated_on: z.string(),
-    bedrooms: z.number().int().min(0, "Bedrooms cannot be negative"),
-    bathrooms: z.number().int().min(0, "Bathrooms cannot be negative"),
-    area_size: z.number().int().min(0, "Area size cannot be negative"),
-    garage: z.number().int().min(0, "Garage cannot be negative"),
+const propertyLocationSchema = z.object({
+  city: z.string({ invalid_type_error: "City should be a text" }),
+  state: z.string({ invalid_type_error: "State should be a text" }),
+  country: z.string({ invalid_type_error: "Country should be a text" }),
+  postalCode: z
+    .string({ invalid_type_error: "Postal code should be a text" })
+    .optional(),
+  street: z.string({ invalid_type_error: "Address should be a text" }),
+  latitude: z
+    .number({ invalid_type_error: "Latitude should be a number" })
+    .optional(),
+  longitude: z
+    .number({ invalid_type_error: "Longitude should be a number" })
+    .optional(),
 });
 
 const propertyDetailsSchema = z.object({
-    id: z.string(),
-    size: z.number().min(0, "Size cannot be negative"),
-    bedrooms: z.number().int().min(0, "Bedrooms cannot be negative"),
-    garage: z.number().int().min(0, "Garage cannot be negative"),
-    available_from: z.string(),
-    price: z.number().min(0, "Price cannot be negative"),
-    property_lot_size: z.string(),
-    bathrooms: z.string(),
-    year_build: z.string(),
-    structure_type: z.string(),
-    price_info: z.string(),
-    rooms: z.number().int().min(0, "Rooms cannot be negative"),
-    garage_size: z.string(),
+  area_size: z
+    .number({ invalid_type_error: "Size must be a number" })
+    .min(0, "Size cannot be negative"),
+  bedroom: z
+    .number({ invalid_type_error: "Bedrooms must be a number" })
+    .int()
+    .min(0, "Bedrooms cannot be negative")
+    .default(0),
+  bathroom: z
+    .number({ invalid_type_error: "Bathroom must be a number" })
+    .int()
+    .min(0, "Bathroom cannot be negative")
+    .default(0),
+  garage: z
+    .number({ invalid_type_error: "Garage must be a number" })
+    .int()
+    .min(0, "Garage cannot be negative")
+    .default(0),
+  available_from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Should be YYYY-MM-DD"),
+  price: z
+    .number({ invalid_type_error: "Price must be a number" })
+    .min(0, "Price cannot be negative"),
+  property_lot_size: z.string().optional(),
+  year_build: z.string().optional(),
+  structure_type: z.string().optional(),
+  price_info: z.string().optional(),
+  room: z.number().int().min(0, "Rooms cannot be negative").default(0),
+  garage_size: z.string().optional(),
 });
 
 const propertyFeaturesSchema = z.object({
-    interior_details: z.array(z.string()),
-    outdoor_details: z.array(z.string()),
-    utilities: z.array(z.string()),
-    other_features: z.array(z.string()),
+  interior_details: z.array(z.string()).optional(),
+  outdoor_details: z.array(z.string()).optional(),
+  utilities: z.array(z.string()).optional(),
+  other_features: z.array(z.string()).optional(),
 });
 
 const createPropertyValidationSchema = z.object({
-    body: z.object({
-        title: z.string().min(1, "Title is required"),
-        description: z.string().optional(),
-        price: z.number().min(0, "Price cannot be negative"),
-        feature_image: z.string(),
-        property_type: z.enum(["APARTMENT", "HOUSE", "VILLA", "LAND"]).optional(),
-        status: z.enum(["AVAILABLE", "SOLD", "RENTED"]).optional(),
-        images: z.array(z.string()).optional(),
-        tags: z.array(z.string()).optional(),
-        overview: propertyOverviewSchema.optional(),
-        contactInfo: propertyContactInfoSchema.optional(),
-        documents: z.array(z.string()).optional(),
-        location: propertyLocationSchema.optional(),
-        property_details: propertyDetailsSchema.optional(),
-        features: propertyFeaturesSchema.optional(),
-    })
+  body: z.object({
+    title: z
+      .string({ invalid_type_error: "Title must be a text" })
+      .min(1, "Title is required"),
+    description: z
+      .string({ invalid_type_error: "Description must be a text" })
+      .optional(),
+    price: z
+      .number({ invalid_type_error: "Price must be a number" })
+      .min(0, "Price cannot be negative"),
+    property_type: z
+      .enum(Object.keys(PropertyType) as [string, ...string[]])
+      .optional(),
+    status: z
+      .enum(Object.keys(PropertyStatus) as [string, ...string[]])
+      .optional(),
+    tags: z.array(z.string()).optional(),
+    contactInfo: propertyContactInfoSchema.optional(),
+    location: propertyLocationSchema.optional(),
+    property_details: propertyDetailsSchema.optional(),
+    features: propertyFeaturesSchema.optional(),
+  }),
 });
 
 export const PropertyValidations = {
-    createPropertyValidationSchema,
+  createPropertyValidationSchema,
 };
