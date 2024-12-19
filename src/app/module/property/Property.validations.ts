@@ -13,7 +13,7 @@ const propertyLocationSchema = z.object({
   city: z.string({ invalid_type_error: "City should be a text" }),
   state: z.string({ invalid_type_error: "State should be a text" }),
   country: z.string({ invalid_type_error: "Country should be a text" }),
-  postalCode: z
+  postal_code: z
     .string({ invalid_type_error: "Postal code should be a text" })
     .optional(),
   street: z.string({ invalid_type_error: "Address should be a text" }),
@@ -46,10 +46,8 @@ const propertyDetailsSchema = z.object({
     .default(0),
   available_from: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Should be YYYY-MM-DD"),
-  price: z
-    .number({ invalid_type_error: "Price must be a number" })
-    .min(0, "Price cannot be negative"),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Should be YYYY-MM-DD")
+    .optional(),
   property_lot_size: z.string().optional(),
   year_build: z.string().optional(),
   structure_type: z.string().optional(),
@@ -83,7 +81,7 @@ const createPropertyValidationSchema = z.object({
       .enum(Object.keys(PropertyStatus) as [string, ...string[]])
       .optional(),
     tags: z.array(z.string()).optional(),
-    contactInfo: propertyContactInfoSchema.optional(),
+    contact_info: propertyContactInfoSchema.optional(),
     location: propertyLocationSchema.optional(),
     property_details: propertyDetailsSchema.optional(),
     features: propertyFeaturesSchema.optional(),

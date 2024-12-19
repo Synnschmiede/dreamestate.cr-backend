@@ -1,8 +1,12 @@
 import prisma from "../../shared/prisma";
-import { IProperty } from "./Property.interface";
+import { IProperty } from "./Property.interfaces";
 
 const createProperty = async (payload: IProperty) => {
-  console.log(payload);
+  // const result = await prisma.property.create(
+  //   {
+  //     data: payload
+  //   }
+  // )
 };
 
 export const PropertyServices = {
