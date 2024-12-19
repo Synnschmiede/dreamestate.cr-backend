@@ -103,34 +103,6 @@ model Image {
   updated_at DateTime @updatedAt
 }
 
-model OTP {
-  id         String   @id @default(uuid())
-  email      String
-  otp        Int      @unique
-  expires_at String
-  created_at DateTime @default(now())
-
-  @@map("otp")
-}
-
-enum UserStatus {
-  ACTIVE
-  BLOCKED
-}
-
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  USER
-}
-
-enum PostingStatus {
-  POSTED
-  NOT_POSTED
-}
-
-// propertiy schema starts
-
 model Properties {
   id              String        @id @default(uuid())
   title           String
@@ -173,6 +145,32 @@ model Location {
   properties Properties?
 
   @@map("location")
+}
+
+model OTP {
+  id         String   @id @default(uuid())
+  email      String
+  otp        Int      @unique
+  expires_at String
+  created_at DateTime @default(now())
+
+  @@map("otp")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum PostingStatus {
+  POSTED
+  NOT_POSTED
 }
 
 enum PropertyType {
