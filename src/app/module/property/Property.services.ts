@@ -12,6 +12,7 @@ import { Prisma, Property, PropertyStatus } from "@prisma/client";
 import fieldValidityChecker from "../../utils/fieldValidityChecker";
 import {
   propertySearchableFields,
+  propertySelectedFields,
   propertySortableFields,
 } from "./Property.constants";
 import { sortOrderType } from "../../constants/common";
@@ -152,8 +153,16 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
 };
 
 const getProperties = async (query: Record<string, any>) => {
-  const { searchTerm, page, limit, sortBy, sortOrder, id, ...remainingQuery } =
-    query;
+  const {
+    searchTerm,
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    id,
+    slug,
+    ...remainingQuery
+  } = query;
   if (sortBy) {
     fieldValidityChecker(propertySortableFields, sortBy);
   }
@@ -173,6 +182,11 @@ const getProperties = async (query: Record<string, any>) => {
   if (id)
     andConditions.push({
       id,
+    });
+
+  if (slug)
+    andConditions.push({
+      slug,
     });
 
   if (searchTerm) {
@@ -206,6 +220,9 @@ const getProperties = async (query: Record<string, any>) => {
     take: limitNumber,
     orderBy: {
       [sortWith]: sortSequence,
+    },
+    select: {
+      ...propertySelectedFields,
     },
   });
 

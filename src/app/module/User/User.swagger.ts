@@ -45,6 +45,16 @@
  *         schema:
  *           type: string
  *         description: ID of the user to retrieve
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           enum: [ACTIVE, BLOCKED]
+ *         description: Status of the user to retrieve
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           enum: [USER, ADMIN]
+ *         description: Role of the user to retrieve
  *     responses:
  *       201:
  *         description: If user retrieved successfully

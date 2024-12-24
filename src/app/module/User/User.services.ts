@@ -160,7 +160,7 @@ const updateProfile = async (
 
   let profilePic;
 
-  if (image.path && image.cloud_id) {
+  if (image.path && image.bucket_id) {
     profilePic = await prisma.image.create({
       data: image as TImage,
     });

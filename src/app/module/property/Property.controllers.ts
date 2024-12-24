@@ -17,12 +17,13 @@ const createProperty = catchAsync(async (req, res, next) => {
 
 const getProperties = catchAsync(async (req, res, next) => {
   const filteredQuery = pick(req.query, propertyFilterableFields);
-  const result = await PropertyServices.getProperties(req.query);
+  const result = await PropertyServices.getProperties(filteredQuery);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
     message: "Properties retrieved successfully",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
