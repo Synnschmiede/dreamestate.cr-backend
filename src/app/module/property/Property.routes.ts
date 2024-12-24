@@ -8,6 +8,8 @@ import validateFormData from "../../middlewares/validateFormData";
 
 const router = Router();
 
+router.get("/", PropertyControllers.getProperties);
+
 router.post(
   "/add-property",
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),

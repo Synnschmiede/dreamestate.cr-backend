@@ -1,5 +1,6 @@
 import { PropertyStatus, PropertyType } from "@prisma/client";
 import { TFile } from "../../interfaces/file";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 export interface PropertyContactInfo {
   name: string;
@@ -11,7 +12,7 @@ export interface IPropertyLocation {
   city: string;
   state: string;
   country: string;
-  address: string;
+  street: string;
   postal_code?: string;
   latitude?: number;
   longitude?: number;
@@ -40,7 +41,7 @@ export interface IPropertyFeatures {
 
 export interface IProperty {
   title: string;
-  description: string;
+  description?: string;
   price: number;
   property_type?: PropertyType;
   status?: PropertyStatus;

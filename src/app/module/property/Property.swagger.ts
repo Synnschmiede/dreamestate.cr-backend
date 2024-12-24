@@ -207,9 +207,22 @@
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CreateProperty'
+ *             type: object
+ *             properties:
+ *               feature_image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Feature image of the property
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                   description: Images of the property
+ *               data:
+ *                 $ref: '#/components/schemas/CreateProperty'
  *     responses:
  *       201:
  *         description: Property created successfully
@@ -218,12 +231,84 @@
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 message:
  *                   type: string
  *                   example: Property created successfully.
  *                 data:
  *                   type: object
  *                   description: The created property object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: The ID of the created property
+ *                       example: 5f9e8f9e8f9e8f9e8f9e8f9e
+ *                     user_id:
+ *                       type: string
+ *                       description: The ID of the user who created the property
+ *                       example: 5f9e8f9e8f9e8f9e8f9e8f9e
+ *                     title:
+ *                       type: string
+ *                       description: The title of the property
+ *                       example: Beautiful Family Home
+ *                     slug:
+ *                       type: string
+ *                       description: The slug of the property
+ *                       example: beautiful-family-home
+ *                     description:
+ *                       type: string
+ *                       description: The description of the property
+ *                       example: A spacious 3-bedroom home in the heart of the city.
+ *                     price:
+ *                       type: number
+ *                       description: The price of the property
+ *                       example: 250000
+ *                     feature_image:
+ *                       type: string
+ *                       description: The feature image path of the property
+ *                       example: https://example.com/feature-image.jpg
+ *                     images:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         description: The image paths of the property
+ *                         example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+ *                     property_type:
+ *                       type: string
+ *                       enum: [APARTMENT,HOUSE, VILLA, LAND]
+ *                       description: The type of the property
+ *                       example: APARTMENT | HOUSE | VILLA | LAND
+ *                     status:
+ *                       type: string
+ *                       enum: [AVAILABLE, SOLD, RENTED]
+ *                       description: The status of the property
+ *                       example: AVAILABLE | SOLD | RENTED
+ *                     tags:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         description: The tags associated with the property
+ *                         example: ["Luxury", "Sea View"]
+ *                     documents:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         description: The document paths of the property
+ *                         example: ["https://example.com/document1.pdf", "https://example.com/document2.pdf"]
+ *                     property_details:
+ *                       $ref: '#/components/schemas/PropertyDetails'
+ *                     features:
+ *                       $ref: '#/components/schemas/PropertyFeatures'
+ *                     contact_info_id:
+ *                       type: string
+ *                       description: The ID of the contact information associated with the property
+ *                       example: 5f9e8f9e8f9e8f9e8f9e8f9e
+ *                     location_id:
+ *                       type: string
+ *                       description: The ID of the location associated with the property
+ *                       example: 5f9e8f9e8f9e8f9e8f9e8f9e
  *       400:
  *         description: Bad request due to invalid input
  *         content:

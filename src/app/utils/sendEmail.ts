@@ -6,15 +6,15 @@ const sendEmail = async (receiverEmail: string, html: string) => {
     port: 587,
     secure: false,
     auth: {
-      user: config.wolfstudios_email,
+      user: config.dreamestate_email,
       pass: config.email_app_pass,
     },
   });
 
   const info = await transporter.sendMail({
-    from: `"Wolfstudios" <${config.wolfstudios_email}>`,
+    from: `${config.app_name} <${config.dreamestate_email}>`,
     to: receiverEmail,
-    subject: "WOLFSTUDIOS - Password Reset OTP",
+    subject: `${config.app_name}- Password Reset OTP`,
     html,
   });
 

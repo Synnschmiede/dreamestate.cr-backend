@@ -47,36 +47,38 @@ model Property {
   documents        String[]       @default([])
   property_details Json?
   features         Json?
-  contact_info     ContactInfo?
-  location         Location?
+  contact_info_id  String?        @unique
+  location_id      String?        @unique
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
 
-  uploaded_by User? @relation(fields: [user_id], references: [id])
+  uploaded_by  User?        @relation(fields: [user_id], references: [id])
+  contact_info ContactInfo? @relation(fields: [contact_info_id], references: [id])
+  location     Location?    @relation(fields: [location_id], references: [id])
 
   @@map("properties")
 }
 
 model ContactInfo {
-  id          String @id @default(uuid())
-  name        String
-  email       String
-  phone       String
-  property_id String @unique
-
-  property Property @relation(fields: [property_id], references: [id])
+  id       String    @id @default(uuid())
+  name     String
+  email    String
+  phone    String?
+  Property Property?
 
   @@map("contact_info")
 }
 
 model Location {
-  id          String  @id @default(uuid())
+  id          String    @id @default(uuid())
   city        String
   state       String
   country     String
   street      String
-  zip         String?
-  property_id String  @unique
-
-  property Property @relation(fields: [property_id], references: [id])
+  postal_code String?
+  latitude    Int?
+  longitude   Int?
+  Property    Property?
 
   @@map("locations")
 }

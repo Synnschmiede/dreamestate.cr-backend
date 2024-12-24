@@ -11,7 +11,7 @@ export default {
   jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
   jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
-  wolfstudios_email: process.env.WOLFSTUDIOS_EMAIL,
+  dreamestate_email: process.env.DREAMESTATE_EMAIL,
   email_app_pass: process.env.EMAIL_APP_PASS,
   cloud_name: process.env.CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
@@ -19,4 +19,5 @@ export default {
   supabase_bucket_url: process.env.SUPABASE_BUCKET_URL,
   supabase_bucket_key: process.env.SUPABASE_BUCKET_KEY,
   supabase_bucket_name: process.env.SUPABASE_BUCKET_NAME,
+  app_name: process.env.APP_NAME,
 };
