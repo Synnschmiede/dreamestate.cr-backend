@@ -15,7 +15,8 @@ app.use(
   cors({
     origin: [
       "https://wolf-studios-frontend.vercel.app",
-      "http://localhost:3000",
+      "http://localhost:5000",
+      "http://localhost:5005",
     ],
     credentials: true,
   })
