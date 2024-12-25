@@ -13,14 +13,10 @@ const updateProfileValidationSchema = z.object({
         .optional(),
       last_name: z
         .string({ invalid_type_error: "Last name should be a text" })
-        .min(1, { message: "Last name must be at least 1 characters long" })
         .max(100, { message: "Last name must be at most 100 characters long" })
         .optional(),
       contact_number: z
         .string({ invalid_type_error: "Contact number should be a text" })
-        .min(1, {
-          message: "Contact number must be at least 1 characters long",
-        })
         .optional(),
     })
     .strict(),
@@ -31,9 +27,6 @@ const updateUserValidationSchema = z.object({
     .object({
       contact_number: z
         .string({ invalid_type_error: "Contact number should be a text" })
-        .min(1, {
-          message: "Contact number must be at least 1 characters long",
-        })
         .optional(),
       role: z.enum(Object.values(UserRole) as [string, ...string[]]).optional(),
       status: z

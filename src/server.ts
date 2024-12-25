@@ -3,6 +3,7 @@ import app from "./app";
 import config from "./app/config";
 import cron from "node-cron";
 import clearOldOtps from "./app/utils/clearOldOtps";
+import { seedSuperAdmin } from "./app/db";
 
 const port = config.port || 9000;
 
@@ -11,8 +12,10 @@ let server: Server;
 async function main() {
   try {
     server = app.listen(port, () => {
-      console.log(`Wolfstudios server is running on port ${port}`);
+      console.log(`${config.app_name} server is running on port ${port}`);
     });
+
+    await seedSuperAdmin();
 
     // cron schedule to clear OTP
     cron.schedule("0 12 * * *", () => {

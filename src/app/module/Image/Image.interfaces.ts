@@ -1,1 +1,1 @@
-export type TImage = { name: string; path: string; cloud_id: string };
+export type TImage = { name: string; path: string; bucket_id: string };

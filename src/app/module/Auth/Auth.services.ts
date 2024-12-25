@@ -93,6 +93,7 @@ const login = async (credential: TLoginCredential) => {
   );
 
   return {
+    id: user.id,
     name: `${user.first_name} ${user.last_name}`,
     email: user.email,
     contact_number: user.contact_number,
@@ -113,14 +114,14 @@ const resetPassword = async (
   });
 
   const checkPassword = await bcrypt.compare(
-    payload.oldPassword,
+    payload.old_password,
     userInfo.password
   );
   if (!checkPassword) {
     throw new ApiError(httpStatus.FORBIDDEN, "Old password is invalid");
   }
   const hashedPassword = await bcrypt.hash(
-    payload.newPassword,
+    payload.new_password,
     Number(config.salt_rounds)
   );
   const result = await prisma.user.update({
@@ -136,7 +137,14 @@ const resetPassword = async (
     },
   });
 
-  return result;
+  return {
+    id: result.id,
+    name: `${result.first_name} ${result.last_name}`,
+    email: result.email,
+    contact_number: result.contact_number,
+    profile_pic: result.profile_pic,
+    role: result.role,
+  };
 };
 
 const forgotPassword = async (payload: TForgotPasswordPayload) => {
@@ -174,7 +182,14 @@ const forgotPassword = async (payload: TForgotPasswordPayload) => {
     return {
       success: true,
       message: "Password updated successfully",
-      data: result,
+      data: {
+        id: result.id,
+        name: `${result.first_name} ${result.last_name}`,
+        email: result.email,
+        contact_number: result.contact_number,
+        profile_pic: result.profile_pic,
+        role: result.role,
+      },
     };
   } else if (email && !new_password && !otp) {
     const user = await prisma.user.findUniqueOrThrow({

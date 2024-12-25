@@ -33,7 +33,7 @@ const auth = (...roles: string[]) => {
         new Date(user.password_changed_at).getTime() / 1000
       );
 
-      if (passwordChangedTime < verifiedUser.password_changed_at) {
+      if (passwordChangedTime > verifiedUser.iat) {
         throw new ApiError(
           httpStatus.UNAUTHORIZED,
           "Password changed recently"
