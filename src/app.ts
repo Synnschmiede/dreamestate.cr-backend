@@ -12,12 +12,7 @@ const app: Application = express();
 // middlewares configuration
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: configureCors,
-    credentials: true,
-  })
-);
+app.use(cors(configureCors));
 
 // test server
 app.get("/", (req, res) => {

@@ -1,13 +1,13 @@
-function configureCors(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+import { Request } from "express";
+
+function configureCors(req: Request, callback: (error: Error | null, options: any) => void): void {
     const allowedDomains = ["https://wolf-studios-frontend.vercel.app"];
-    if (
-        origin &&
-        (allowedDomains.includes(origin) || origin.includes("localhost"))
-    ) {
-        callback(null, true);
-    } else {
-        callback(new Error("Not allowed by CORS"));
+    const origin = req.headers.origin;
+    const corsOptions = {
+        origin: allowedDomains.includes(origin as string) || origin?.includes("localhost"),
+        credentials: true,
     }
+    callback(null, corsOptions);
 }
 
 export default configureCors; 
