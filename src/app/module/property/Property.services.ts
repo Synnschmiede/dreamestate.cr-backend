@@ -161,7 +161,8 @@ const getProperties = async (query: Record<string, any>) => {
     sortOrder,
     id,
     slug,
-    ...remainingQuery
+    category,
+    city,
   } = query;
   if (sortBy) {
     fieldValidityChecker(propertySortableFields, sortBy);
@@ -202,11 +203,28 @@ const getProperties = async (query: Record<string, any>) => {
     });
   }
 
-  if (Object.keys(remainingQuery).length) {
-    Object.keys(remainingQuery).forEach((key) => {
-      andConditions.push({
-        [key]: remainingQuery[key],
-      });
+  if (category && category !== "ALL") {
+    const categories = category.split(",");
+    const refineCategories = categories.filter((c: string) => c !== "ALL");
+    andConditions.push({
+      property_type: {
+        in: refineCategories,
+      },
+    });
+  }
+
+  if (city && city !== "ALL") {
+    const cities = city.split(",");
+    const refineCities = cities.filter((c: string) => c !== "ALL");
+    andConditions.push({
+      location: {
+        OR: refineCities.map((city: string) => ({
+          city: {
+            contains: city,
+            mode: "insensitive",
+          },
+        })),
+      },
     });
   }
 
