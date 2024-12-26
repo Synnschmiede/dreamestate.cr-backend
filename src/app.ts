@@ -5,21 +5,14 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFoundHandler from "./app/middlewares/notFoundHandler";
 import router from "./app/routes";
 import SwaggerRoutes from "./app/routes/swagger.routes";
+import configureCors from "./app/utils/configureCors";
 
 const app: Application = express();
 
 // middlewares configuration
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: [
-      "https://wolf-studios-frontend.vercel.app",
-      "http://localhost:3000",
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(configureCors));
 
 // test server
 app.get("/", (req, res) => {
