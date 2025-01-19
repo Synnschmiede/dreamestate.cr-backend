@@ -1,6 +1,5 @@
 import { PropertyStatus, PropertyType } from "@prisma/client";
-import { TFile } from "../../interfaces/file";
-import { JsonValue } from "@prisma/client/runtime/library";
+import { TFile } from "../File/File.interfaces";
 
 export interface PropertyContactInfo {
   name: string;

@@ -1,36 +1,38 @@
+import { Prisma, PropertyStatus } from "@prisma/client";
 import { Request } from "express";
-import { TAuthUser } from "../../interfaces/common";
-import { IProperty, TPropertyFiles } from "./Property.interfaces";
-import supabase from "../../shared/supabase";
-import config from "../../config";
-import ApiError from "../../error/ApiError";
 import httpStatus from "http-status";
+import sharp from "sharp";
+import config from "../../config";
+import { sortOrderType } from "../../constants/common";
+import ApiError from "../../error/ApiError";
+import { TAuthUser } from "../../interfaces/common";
 import prisma from "../../shared/prisma";
-import { TImage } from "../Image/Image.interfaces";
-import { generateSlug } from "../../utils/generateSlug";
-import { Prisma, Property, PropertyStatus } from "@prisma/client";
+import supabase from "../../shared/supabase";
 import fieldValidityChecker from "../../utils/fieldValidityChecker";
+import { generateSlug } from "../../utils/generateSlug";
+import pagination from "../../utils/pagination";
 import {
   propertySearchableFields,
   propertySelectedFields,
   propertySortableFields,
 } from "./Property.constants";
-import { sortOrderType } from "../../constants/common";
-import pagination from "../../utils/pagination";
+import { IProperty, TPropertyFiles } from "./Property.interfaces";
 
 const createProperty = async (req: Request & { user?: TAuthUser }) => {
   const data: IProperty = req.body;
   const files = req.files as TPropertyFiles;
+  const user = req.user as TAuthUser;
 
   const { contact_info, location, features, property_details } = data;
 
   let feature_image;
-  const images: TImage[] = [];
+  const images: Prisma.FileCreateManyInput[] = [];
   const images_path: string[] = [];
 
   if (files.feature_image) {
     const featureImage = files.feature_image[0];
     const fileName = `${Date.now()}_${featureImage.originalname}`;
+    const metadata = await sharp(featureImage.buffer).metadata();
     const { data } = await supabase.storage
       .from(config.supabase_bucket_name)
       .upload(fileName, featureImage.buffer, {
@@ -45,8 +47,14 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
     }
 
     feature_image = {
+      user_id: user.id,
       name: featureImage.originalname,
-      path: data.path,
+      alt_text: featureImage.originalname.replace(/\.[^/.]+$/, ""),
+      type: featureImage.mimetype,
+      size: featureImage.size,
+      width: metadata.width || 0,
+      height: metadata.height || 0,
+      path: `/${config.supabase_bucket_name}/${data.path}`,
       bucket_id: data.id,
     };
   } else {
@@ -57,6 +65,7 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
     for (let i = 0; i < files.images.length; i++) {
       const file = files.images[i];
       const fileName = `${Date.now()}_${file.originalname}`;
+      const metadata = await sharp(file.buffer).metadata();
       const { data } = await supabase.storage
         .from(config.supabase_bucket_name)
         .upload(fileName, file.buffer, {
@@ -64,11 +73,17 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
         });
       if (data && data.id) {
         images.push({
+          user_id: user.id,
           name: file.originalname,
-          path: data.path,
+          alt_text: file.originalname.replace(/\.[^/.]+$/, ""),
+          type: file.mimetype,
+          size: file.size,
+          width: metadata.width || 0,
+          height: metadata.height || 0,
+          path: `/${config.supabase_bucket_name}/${data.path}`,
           bucket_id: data.id,
         });
-        images_path.push(data.path);
+        images_path.push(`/${config.supabase_bucket_name}/${data.path}`);
       }
     }
   }
@@ -77,7 +92,7 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
     title: data.title,
     slug: generateSlug(data.title),
     price: data.price,
-    user_id: req.user?.id || null,
+    user_id: user?.id || null,
     feature_image: feature_image.path || null,
     description: data?.description || null,
     property_type: data?.property_type || null,
@@ -106,7 +121,7 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
   };
 
   const result = await prisma.$transaction(async (tx) => {
-    await tx.image.createMany({
+    await tx.file.createMany({
       data: [...images, feature_image],
     });
 
@@ -161,7 +176,8 @@ const getProperties = async (query: Record<string, any>) => {
     sortOrder,
     id,
     slug,
-    ...remainingQuery
+    category,
+    city,
   } = query;
   if (sortBy) {
     fieldValidityChecker(propertySortableFields, sortBy);
@@ -202,11 +218,28 @@ const getProperties = async (query: Record<string, any>) => {
     });
   }
 
-  if (Object.keys(remainingQuery).length) {
-    Object.keys(remainingQuery).forEach((key) => {
-      andConditions.push({
-        [key]: remainingQuery[key],
-      });
+  if (category && category !== "ALL") {
+    const categories = category.split(",");
+    const refineCategories = categories.filter((c: string) => c !== "ALL");
+    andConditions.push({
+      property_type: {
+        in: refineCategories,
+      },
+    });
+  }
+
+  if (city && city !== "ALL") {
+    const cities = city.split(",");
+    const refineCities = cities.filter((c: string) => c !== "ALL");
+    andConditions.push({
+      location: {
+        OR: refineCities.map((city: string) => ({
+          city: {
+            contains: city,
+            mode: "insensitive",
+          },
+        })),
+      },
     });
   }
 

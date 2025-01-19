@@ -16,8 +16,7 @@ const createProperty = catchAsync(async (req, res, next) => {
 });
 
 const getProperties = catchAsync(async (req, res, next) => {
-  const filteredQuery = pick(req.query, propertyFilterableFields);
-  const result = await PropertyServices.getProperties(filteredQuery);
+  const result = await PropertyServices.getProperties(req.query);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
