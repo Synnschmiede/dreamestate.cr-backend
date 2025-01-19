@@ -19,10 +19,8 @@
  *           type: string
  *           example: Blog content
  *         tags:
- *           type: array
- *           items:
- *             type: string
- *             example: tag1
+ *           type: string
+ *           example: tag1,tag2
  *         thumbnail:
  *           type: string
  *           example: https://example.com/thumbnail.jpg

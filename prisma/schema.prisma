@@ -29,6 +29,7 @@ model User {
   updated_at          DateTime   @updatedAt
   Property            Property[]
   Blog                Blog[]
+  File                File[]
 
   @@map("users")
 }
@@ -89,7 +90,7 @@ model Blog {
   title      String
   slug       String   @unique
   content    String
-  tags       String[] @default([])
+  tags       String?
   thumbnail  String?
   images     String[] @default([])
   author_id  String
@@ -102,13 +103,23 @@ model Blog {
   @@map("blogs")
 }
 
-model Image {
+model File {
   id         String   @id @default(uuid())
   name       String
+  alt_text   String
+  type       String
+  size       Int
+  width      Int
+  height     Int
   path       String
   bucket_id  String
+  user_id    String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  uploaded_by User @relation(fields: [user_id], references: [id])
+
+  @@map("files")
 }
 
 model OTP {

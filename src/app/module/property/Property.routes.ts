@@ -1,10 +1,10 @@
+import { UserRole } from "@prisma/client";
 import { Router } from "express";
 import auth from "../../middlewares/auth";
-import { UserRole } from "@prisma/client";
-import { PropertyValidations } from "./Property.validations";
-import { PropertyControllers } from "./Property.controllers";
-import { fileUploader } from "../../utils/fileUploader";
 import validateFormData from "../../middlewares/validateFormData";
+import { fileUploader } from "../../utils/fileUploader";
+import { PropertyControllers } from "./Property.controllers";
+import { PropertyValidations } from "./Property.validations";
 
 const router = Router();
 
@@ -13,7 +13,7 @@ router.get("/", PropertyControllers.getProperties);
 router.post(
   "/add-property",
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-  fileUploader.multipleUpload.fields([
+  fileUploader.multipleUploadThroughApi.fields([
     { name: "feature_image", maxCount: 1 },
     { name: "images", maxCount: 10 },
   ]),

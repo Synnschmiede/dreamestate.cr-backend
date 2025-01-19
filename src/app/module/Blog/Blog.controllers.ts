@@ -15,6 +15,40 @@ const createPost = catchAsync(async (req: Request & { user?: TAuthUser }, res, n
     });
 });
 
+const getPosts = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+    const result = await BlogServices.getPosts(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Posts retrieved successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+});
+
+const updatePost = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+    const result = await BlogServices.updatePost(req.params.id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Posts updated successfully",
+        data: result,
+    });
+});
+
+const deletePosts = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+    const result = await BlogServices.deletePosts(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Posts deleted successfully",
+        data: result,
+    });
+});
+
 export const BlogControllers = {
-    createPost
+    createPost,
+    getPosts,
+    updatePost,
+    deletePosts
 }
