@@ -1,11 +1,11 @@
 import { Request } from "express";
+import httpStatus from "http-status";
+import { TAuthUser } from "../../interfaces/common";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { pick } from "../../utils/pick";
 import { userFilterableFields } from "./User.constants";
 import { UserServices } from "./User.services";
-import httpStatus from "http-status";
-import { TAuthUser } from "../../interfaces/common";
 
 const getUsers = catchAsync(async (req, res, next) => {
   const filteredQuery = pick(req.query, userFilterableFields);
@@ -34,7 +34,7 @@ const getMe = catchAsync(
 const updateProfile = catchAsync(
   async (req: Request & { user?: TAuthUser }, res, next) => {
     const result = await UserServices.updateProfile(
-      req.user,
+      req.user as TAuthUser,
       req.body,
       req.file
     );

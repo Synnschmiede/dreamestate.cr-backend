@@ -1,19 +1,19 @@
-import { Prisma, UserStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import sharp from "sharp";
+import config from "../../config";
 import { sortOrderType } from "../../constants/common";
+import ApiError from "../../error/ApiError";
+import { TAuthUser } from "../../interfaces/common";
+import prisma from "../../shared/prisma";
+import supabase from "../../shared/supabase";
 import fieldValidityChecker from "../../utils/fieldValidityChecker";
 import pagination from "../../utils/pagination";
+import { TFile } from "../File/File.interfaces";
 import {
   userSearchableFields,
   userSelectedFields,
   userSortableFields,
 } from "./User.constants";
-import prisma from "../../shared/prisma";
-import { TAuthUser } from "../../interfaces/common";
-import { TFile } from "../../interfaces/file";
-import { TImage } from "../Image/Image.interfaces";
-import supabase from "../../shared/supabase";
-import config from "../../config";
-import ApiError from "../../error/ApiError";
 
 const getUsers = async (query: Record<string, any>) => {
   const { searchTerm, page, limit, sortBy, sortOrder, id, ...remainingQuery } =
@@ -102,11 +102,11 @@ const getMe = async (user: TAuthUser | undefined) => {
 };
 
 const updateProfile = async (
-  user: TAuthUser | undefined,
+  user: TAuthUser,
   payload: Record<string, any>,
   file: TFile | undefined
 ) => {
-  let image: Record<string, any> = {};
+  let image: any = {};
   if (file) {
     const userInfo = await prisma.user.findUniqueOrThrow({
       where: {
@@ -118,7 +118,7 @@ const updateProfile = async (
     });
 
     if (userInfo.profile_pic) {
-      const profile_pic_info = await prisma.image.findFirst({
+      const profile_pic_info = await prisma.file.findFirst({
         where: {
           path: userInfo.profile_pic,
         },
@@ -128,7 +128,7 @@ const updateProfile = async (
           .from(config.supabase_bucket_name)
           .remove([profile_pic_info.path]);
         if (data) {
-          await prisma.image.delete({
+          await prisma.file.delete({
             where: {
               id: profile_pic_info.id,
             },
@@ -136,6 +136,8 @@ const updateProfile = async (
         }
       }
     }
+
+    const metadata = await sharp(file.buffer).metadata();
 
     const fileName = `${Date.now()}_${file.originalname}`;
     const { data } = await supabase.storage
@@ -152,8 +154,14 @@ const updateProfile = async (
     }
 
     image = {
+      user_id: user.id,
       name: file.originalname,
-      path: data.path,
+      alt_text: file.originalname.replace(/\.[^/.]+$/, ""),
+      type: file.mimetype,
+      size: file.size,
+      width: metadata.width || 0,
+      height: metadata.height || 0,
+      path: `/${config.supabase_bucket_name}/${data.path}`,
       bucket_id: data.id,
     };
   }
@@ -161,8 +169,8 @@ const updateProfile = async (
   let profilePic;
 
   if (image.path && image.bucket_id) {
-    profilePic = await prisma.image.create({
-      data: image as TImage,
+    profilePic = await prisma.file.create({
+      data: image,
     });
   }
 

@@ -20,6 +20,7 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only --watch ./src/app/ ./src/server.ts",
+    "build": "tsc",
     "postinstall": "prisma generate"
   },
   "devDependencies": {
