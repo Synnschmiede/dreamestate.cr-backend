@@ -28,6 +28,7 @@ model User {
   created_at          DateTime   @default(now())
   updated_at          DateTime   @updatedAt
   Property            Property[]
+  Blog                Blog[]
 
   @@map("users")
 }
@@ -81,6 +82,24 @@ model Location {
   Property    Property?
 
   @@map("locations")
+}
+
+model Blog {
+  id         String   @id @default(uuid())
+  title      String
+  slug       String   @unique
+  content    String
+  tags       String[] @default([])
+  thumbnail  String?
+  images     String[] @default([])
+  author_id  String
+  published  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  author User @relation(fields: [author_id], references: [id])
+
+  @@map("blogs")
 }
 
 model Image {
