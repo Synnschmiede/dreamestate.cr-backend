@@ -15,7 +15,29 @@ const filesUpload = catchAsync(async (req: Request & { user?: TAuthUser }, res, 
     });
 });
 
+const getFiles = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+    const result = await FileServices.getFiles(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Files retrieved successfully",
+        data: result,
+    });
+});
+
+const deleteFiles = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+    const result = await FileServices.deleteFiles(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Files deleted successfully",
+        data: result,
+    });
+});
+
 
 export const FileControllers = {
-    filesUpload
+    filesUpload,
+    getFiles,
+    deleteFiles
 }

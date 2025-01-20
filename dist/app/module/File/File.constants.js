@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.allowedFileType = void 0;
+exports.fileFieldsValidationConfig = exports.fileSearchableFields = exports.fileSortableFields = exports.allowedFileType = void 0;
+const common_1 = require("../../constants/common");
 exports.allowedFileType = [
     "image/jpeg",
     "image/png",
@@ -9,3 +10,10 @@ exports.allowedFileType = [
     "image/vnd.microsoft.icon",
     "image/webp",
 ];
+exports.fileSortableFields = ["name", "created_at", "updated_at"];
+exports.fileSearchableFields = ["name", "type"];
+exports.fileFieldsValidationConfig = {
+    sort_by: exports.fileSortableFields,
+    sort_order: common_1.sortOrderType,
+    type: exports.allowedFileType
+};

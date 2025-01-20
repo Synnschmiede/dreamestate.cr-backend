@@ -26,6 +26,26 @@ const filesUpload = (0, catchAsync_1.default)((req, res, next) => __awaiter(void
         data: result,
     });
 }));
+const getFiles = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield File_services_1.FileServices.getFiles(req.query);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Files retrieved successfully",
+        data: result,
+    });
+}));
+const deleteFiles = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield File_services_1.FileServices.deleteFiles(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Files deleted successfully",
+        data: result,
+    });
+}));
 exports.FileControllers = {
-    filesUpload
+    filesUpload,
+    getFiles,
+    deleteFiles
 };

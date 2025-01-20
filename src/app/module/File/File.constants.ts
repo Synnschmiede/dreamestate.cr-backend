@@ -1,3 +1,5 @@
+import { sortOrderType } from "../../constants/common";
+
 export const allowedFileType = [
     "image/jpeg",
     "image/png",
@@ -6,3 +8,13 @@ export const allowedFileType = [
     "image/vnd.microsoft.icon",
     "image/webp",
 ];
+
+export const fileSortableFields = ["name", "created_at", "updated_at"];
+
+export const fileSearchableFields = ["name", "type"];
+
+export const fileFieldsValidationConfig = {
+    sort_by: fileSortableFields,
+    sort_order: sortOrderType,
+    type: allowedFileType
+}
