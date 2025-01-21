@@ -193,6 +193,14 @@
  *         features:
  *           $ref: '#/components/schemas/PropertyFeatures'
  *           nullable: true
+ *         feature_image:
+ *           type: string
+ *           example: /general/feature-image.jpg
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *             example: /general/image.jpg
  */
 
 /**

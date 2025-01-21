@@ -1,13 +1,7 @@
 import { Prisma, PropertyStatus } from "@prisma/client";
-import { Request } from "express";
-import httpStatus from "http-status";
-import sharp from "sharp";
-import config from "../../config";
 import { sortOrderType } from "../../constants/common";
-import ApiError from "../../error/ApiError";
 import { TAuthUser } from "../../interfaces/common";
 import prisma from "../../shared/prisma";
-import supabase from "../../shared/supabase";
 import fieldValidityChecker from "../../utils/fieldValidityChecker";
 import { generateSlug } from "../../utils/generateSlug";
 import pagination from "../../utils/pagination";
@@ -16,88 +10,21 @@ import {
   propertySelectedFields,
   propertySortableFields,
 } from "./Property.constants";
-import { IProperty, TPropertyFiles } from "./Property.interfaces";
+import { IProperty } from "./Property.interfaces";
 
-const createProperty = async (req: Request & { user?: TAuthUser }) => {
-  const data: IProperty = req.body;
-  const files = req.files as TPropertyFiles;
-  const user = req.user as TAuthUser;
-
+const createProperty = async (user: TAuthUser, data: IProperty) => {
   const { contact_info, location, features, property_details } = data;
-
-  let feature_image;
-  const images: Prisma.FileCreateManyInput[] = [];
-  const images_path: string[] = [];
-
-  if (files.feature_image) {
-    const featureImage = files.feature_image[0];
-    const fileName = `${Date.now()}_${featureImage.originalname}`;
-    const metadata = await sharp(featureImage.buffer).metadata();
-    const { data } = await supabase.storage
-      .from(config.supabase_bucket_name)
-      .upload(fileName, featureImage.buffer, {
-        contentType: featureImage.mimetype,
-      });
-
-    if (!data?.id) {
-      throw new ApiError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "Failed to upload feature image"
-      );
-    }
-
-    feature_image = {
-      user_id: user.id,
-      name: featureImage.originalname,
-      alt_text: featureImage.originalname.replace(/\.[^/.]+$/, ""),
-      type: featureImage.mimetype,
-      size: featureImage.size,
-      width: metadata.width || 0,
-      height: metadata.height || 0,
-      path: `/${config.supabase_bucket_name}/${data.path}`,
-      bucket_id: data.id,
-    };
-  } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Feature image is required");
-  }
-
-  if (files.images && files.images?.length > 0) {
-    for (let i = 0; i < files.images.length; i++) {
-      const file = files.images[i];
-      const fileName = `${Date.now()}_${file.originalname}`;
-      const metadata = await sharp(file.buffer).metadata();
-      const { data } = await supabase.storage
-        .from(config.supabase_bucket_name)
-        .upload(fileName, file.buffer, {
-          contentType: file.mimetype,
-        });
-      if (data && data.id) {
-        images.push({
-          user_id: user.id,
-          name: file.originalname,
-          alt_text: file.originalname.replace(/\.[^/.]+$/, ""),
-          type: file.mimetype,
-          size: file.size,
-          width: metadata.width || 0,
-          height: metadata.height || 0,
-          path: `/${config.supabase_bucket_name}/${data.path}`,
-          bucket_id: data.id,
-        });
-        images_path.push(`/${config.supabase_bucket_name}/${data.path}`);
-      }
-    }
-  }
 
   const propertyObj = {
     title: data.title,
     slug: generateSlug(data.title),
     price: data.price,
     user_id: user?.id || null,
-    feature_image: feature_image.path || null,
+    feature_image: data.feature_image || null,
     description: data?.description || null,
     property_type: data?.property_type || null,
     status: data?.status || PropertyStatus.AVAILABLE,
-    images: images_path,
+    images: data.images,
     tags: data?.tags || [],
     property_details: {
       area_size: property_details?.area_size,
@@ -121,10 +48,6 @@ const createProperty = async (req: Request & { user?: TAuthUser }) => {
   };
 
   const result = await prisma.$transaction(async (tx) => {
-    await tx.file.createMany({
-      data: [...images, feature_image],
-    });
-
     let createdContactInfo;
     if (contact_info) {
       createdContactInfo = await tx.contactInfo.create({

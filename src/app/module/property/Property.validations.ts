@@ -85,6 +85,8 @@ const createPropertyValidationSchema = z.object({
     location: propertyLocationSchema.optional(),
     property_details: propertyDetailsSchema.optional(),
     features: propertyFeaturesSchema.optional(),
+    feature_image: z.string({ invalid_type_error: "Feature image should be a path/url" }).optional(),
+    images: z.array(z.string({ invalid_type_error: "Image should be a path/url" })).optional()
   }),
 });
 

@@ -49,6 +49,8 @@ export interface IProperty {
   location?: IPropertyLocation;
   property_details?: IPropertyDetails;
   features?: IPropertyFeatures;
+  feature_image?: string;
+  images?: string[];
 }
 
 export type TPropertyFiles = {

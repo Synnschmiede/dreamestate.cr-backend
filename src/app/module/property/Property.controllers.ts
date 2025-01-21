@@ -1,12 +1,12 @@
+import { Request } from "express";
+import httpStatus from "http-status";
+import { TAuthUser } from "../../interfaces/common";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
-import { pick } from "../../utils/pick";
-import { propertyFilterableFields } from "./Property.constants";
 import { PropertyServices } from "./Property.services";
-import httpStatus from "http-status";
 
-const createProperty = catchAsync(async (req, res, next) => {
-  const result = await PropertyServices.createProperty(req);
+const createProperty = catchAsync(async (req: Request & { user?: TAuthUser }, res, next) => {
+  const result = await PropertyServices.createProperty(req.user as TAuthUser, req.body);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
