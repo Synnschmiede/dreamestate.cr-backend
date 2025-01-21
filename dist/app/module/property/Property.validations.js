@@ -83,6 +83,8 @@ const createPropertyValidationSchema = zod_1.z.object({
         location: propertyLocationSchema.optional(),
         property_details: propertyDetailsSchema.optional(),
         features: propertyFeaturesSchema.optional(),
+        feature_image: zod_1.z.string({ invalid_type_error: "Feature image should be a path/url" }).optional(),
+        images: zod_1.z.array(zod_1.z.string({ invalid_type_error: "Image should be a path/url" })).optional()
     }),
 });
 exports.PropertyValidations = {
