@@ -32,6 +32,8 @@ const updatePostValidationSchema = zod_1.z.object({
         tags: zod_1.z.string({ invalid_type_error: "Tags should be a comma seaparated text" }).optional(),
         thumbnail: zod_1.z.string({ invalid_type_error: "Thumbnail should be a path/url" }).optional(),
         images: zod_1.z.array(zod_1.z.string({ invalid_type_error: "Image should be a path/url" })).optional(),
+        published: zod_1.z.boolean({ invalid_type_error: "Published should be true or false" }).optional(),
+        featured: zod_1.z.boolean({ invalid_type_error: "Featured should be true or false" }).optional()
     }).strict()
 });
 const deletePostValidationSchema = zod_1.z.object({

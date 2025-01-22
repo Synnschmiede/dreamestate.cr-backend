@@ -95,6 +95,7 @@ model Blog {
   images     String[] @default([])
   author_id  String
   published  Boolean  @default(true)
+  featured   Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

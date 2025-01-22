@@ -31,6 +31,8 @@ const updatePostValidationSchema = z.object({
         tags: z.string({ invalid_type_error: "Tags should be a comma seaparated text" }).optional(),
         thumbnail: z.string({ invalid_type_error: "Thumbnail should be a path/url" }).optional(),
         images: z.array(z.string({ invalid_type_error: "Image should be a path/url" })).optional(),
+        published: z.boolean({ invalid_type_error: "Published should be true or false" }).optional(),
+        featured: z.boolean({ invalid_type_error: "Featured should be true or false" }).optional()
     }).strict()
 });
 
