@@ -139,6 +139,7 @@ const updatePost = async (id: string, payload: Record<string, any>) => {
 }
 
 const deletePosts = async ({ ids }: { ids: string[] }) => {
+    console.log(ids);
     const result = await prisma.blog.deleteMany({
         where: {
             id: {
