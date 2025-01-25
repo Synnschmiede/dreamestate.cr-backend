@@ -36,7 +36,7 @@ const createPost = (user, data) => __awaiter(void 0, void 0, void 0, function* (
     return result;
 });
 const getPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm, page, limit, sortBy, sortOrder, id, slug } = query;
+    const { searchTerm, page, limit, sortBy, sortOrder, id, slug, featured } = query;
     if (sortBy) {
         (0, fieldValidityChecker_1.default)(Blog_constants_1.blogSortableFields, sortBy);
     }
@@ -58,6 +58,11 @@ const getPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
         andConditions.push({
             slug,
         });
+    if (featured) {
+        andConditions.push({
+            featured: Boolean(featured)
+        });
+    }
     if (searchTerm) {
         andConditions.push({
             OR: Blog_constants_1.blogSearchableFields.map((field) => ({

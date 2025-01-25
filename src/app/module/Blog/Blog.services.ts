@@ -38,7 +38,8 @@ const getPosts = async (query: Record<string, any>) => {
         sortBy,
         sortOrder,
         id,
-        slug
+        slug,
+        featured
     } = query;
     if (sortBy) {
         fieldValidityChecker(blogSortableFields, sortBy);
@@ -65,6 +66,12 @@ const getPosts = async (query: Record<string, any>) => {
         andConditions.push({
             slug,
         });
+
+    if (featured) {
+        andConditions.push({
+            featured: Boolean(featured)
+        })
+    }
 
     if (searchTerm) {
         andConditions.push({
