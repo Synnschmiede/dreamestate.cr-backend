@@ -18,7 +18,7 @@ const createProperty = catchAsync(async (req: Request & { user?: TAuthUser }, re
 const getProperties = catchAsync(async (req, res, next) => {
   const result = await PropertyServices.getProperties(req.query);
   sendResponse(res, {
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Properties retrieved successfully",
     meta: result.meta,
@@ -26,7 +26,18 @@ const getProperties = catchAsync(async (req, res, next) => {
   });
 });
 
+const deleteProperties = catchAsync(async (req, res, next) => {
+  const result = await PropertyServices.deleteProperties(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Properties deleted successfully",
+    data: result,
+  });
+});
+
 export const PropertyControllers = {
   createProperty,
   getProperties,
+  deleteProperties
 };

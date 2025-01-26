@@ -87,6 +87,18 @@ const createPropertyValidationSchema = zod_1.z.object({
         images: zod_1.z.array(zod_1.z.string({ invalid_type_error: "Image should be a path/url" })).optional()
     }),
 });
+const deletePropertyValidationSchema = zod_1.z.object({
+    body: zod_1.z
+        .object({
+        ids: zod_1.z
+            .array(zod_1.z
+            .string({ invalid_type_error: "Id should be a text" })
+            .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, "Invalid ID"))
+            .min(1, "Id is required"),
+    })
+        .strict(),
+});
 exports.PropertyValidations = {
     createPropertyValidationSchema,
+    deletePropertyValidationSchema
 };

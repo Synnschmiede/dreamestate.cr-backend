@@ -165,7 +165,21 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
         data: result,
     };
 });
+const deleteProperties = (_a) => __awaiter(void 0, [_a], void 0, function* ({ ids }) {
+    const result = yield prisma_1.default.property.deleteMany({
+        where: {
+            id: {
+                in: ids
+            }
+        }
+    });
+    return {
+        deleted_count: result.count,
+        message: `${result.count} property deleted successfully`
+    };
+});
 exports.PropertyServices = {
     createProperty,
     getProperties,
+    deleteProperties
 };

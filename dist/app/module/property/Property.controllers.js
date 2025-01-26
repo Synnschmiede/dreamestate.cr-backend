@@ -29,14 +29,24 @@ const createProperty = (0, catchAsync_1.default)((req, res, next) => __awaiter(v
 const getProperties = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Property_services_1.PropertyServices.getProperties(req.query);
     (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.CREATED,
+        statusCode: http_status_1.default.OK,
         success: true,
         message: "Properties retrieved successfully",
         meta: result.meta,
         data: result.data,
     });
 }));
+const deleteProperties = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Property_services_1.PropertyServices.deleteProperties(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Properties deleted successfully",
+        data: result,
+    });
+}));
 exports.PropertyControllers = {
     createProperty,
     getProperties,
+    deleteProperties
 };

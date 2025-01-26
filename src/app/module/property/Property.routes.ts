@@ -16,4 +16,11 @@ router.post(
   PropertyControllers.createProperty
 );
 
+router.delete(
+  "/delete-properties",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  validateRequest(PropertyValidations.deletePropertyValidationSchema),
+  PropertyControllers.deleteProperties
+);
+
 export const PropertyRoutes = router;

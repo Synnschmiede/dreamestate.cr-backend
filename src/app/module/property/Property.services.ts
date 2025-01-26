@@ -194,7 +194,22 @@ const getProperties = async (query: Record<string, any>) => {
   };
 };
 
+const deleteProperties = async ({ ids }: { ids: string[] }) => {
+  const result = await prisma.property.deleteMany({
+    where: {
+      id: {
+        in: ids
+      }
+    }
+  })
+  return {
+    deleted_count: result.count,
+    message: `${result.count} property deleted successfully`
+  }
+}
+
 export const PropertyServices = {
   createProperty,
   getProperties,
+  deleteProperties
 };
