@@ -1,14 +1,15 @@
-import { Router } from "express";
-import { AuthControllers } from "./Auth.controllers";
-import validateRequest from "../../middlewares/validateRequest";
-import { AuthValidations } from "./Auth.validations";
-import auth from "../../middlewares/auth";
 import { UserRole } from "@prisma/client";
+import { Router } from "express";
+import auth from "../../middlewares/auth";
+import validateRequest from "../../middlewares/validateRequest";
+import { AuthControllers } from "./Auth.controllers";
+import { AuthValidations } from "./Auth.validations";
 
 const router = Router();
 
 router.post(
   "/create-user",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   validateRequest(AuthValidations.createUserValidationSchema),
   AuthControllers.createUser
 );
