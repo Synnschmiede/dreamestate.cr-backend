@@ -104,6 +104,16 @@ model Blog {
   @@map("blogs")
 }
 
+model Feature {
+  id         String   @id @default(uuid())
+  title      String
+  type       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("features")
+}
+
 model File {
   id         String   @id @default(uuid())
   name       String

@@ -126,7 +126,6 @@ const updatePost = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     return result;
 });
 const deletePosts = (_a) => __awaiter(void 0, [_a], void 0, function* ({ ids }) {
-    console.log(ids);
     const result = yield prisma_1.default.blog.deleteMany({
         where: {
             id: {
