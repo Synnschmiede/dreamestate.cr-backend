@@ -54,9 +54,50 @@ const deleteFeatures = (0, catchAsync_1.default)((req, res, next) => __awaiter(v
         data: result,
     });
 }));
+const addFeatureGroup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Feature_services_1.FeatureServices.addFeatureGroup(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Feature group created successfully",
+        data: result,
+    });
+}));
+const getFeatureGroups = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Feature_services_1.FeatureServices.getFeatures(req.query);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Feature groups retrieved successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+}));
+const updateFeatureGroup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Feature_services_1.FeatureServices.updateFeatureGroup(req.params.id, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Feature group updated successfully",
+        data: result,
+    });
+}));
+const deleteFeatureGroup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Feature_services_1.FeatureServices.deleteFeatureGroup(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Feature group deleted successfully",
+        data: result,
+    });
+}));
 exports.FeatureControllers = {
     addFeature,
     getFeatures,
     updateFeature,
-    deleteFeatures
+    deleteFeatures,
+    addFeatureGroup,
+    getFeatureGroups,
+    updateFeatureGroup,
+    deleteFeatureGroup
 };

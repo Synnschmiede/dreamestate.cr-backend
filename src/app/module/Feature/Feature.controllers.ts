@@ -44,9 +44,54 @@ const deleteFeatures = catchAsync(async (req, res, next) => {
     });
 });
 
+const addFeatureGroup = catchAsync(async (req, res, next) => {
+    const result = await FeatureServices.addFeatureGroup(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Feature group created successfully",
+        data: result,
+    });
+});
+
+const getFeatureGroups = catchAsync(async (req, res, next) => {
+    const result = await FeatureServices.getFeatures(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Feature groups retrieved successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+});
+
+const updateFeatureGroup = catchAsync(async (req, res, next) => {
+    const result = await FeatureServices.updateFeatureGroup(req.params.id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Feature group updated successfully",
+        data: result,
+    });
+});
+
+const deleteFeatureGroup = catchAsync(async (req, res, next) => {
+    const result = await FeatureServices.deleteFeatureGroup(req.params.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Feature group deleted successfully",
+        data: result,
+    });
+});
+
 export const FeatureControllers = {
     addFeature,
     getFeatures,
     updateFeature,
-    deleteFeatures
+    deleteFeatures,
+    addFeatureGroup,
+    getFeatureGroups,
+    updateFeatureGroup,
+    deleteFeatureGroup
 };

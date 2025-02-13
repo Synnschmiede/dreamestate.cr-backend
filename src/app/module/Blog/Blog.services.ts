@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client"
-import { sortOrderType } from "../../constants/common"
+import { sortOrderType, uuidRegex } from "../../constants/common"
 import { TAuthUser } from "../../interfaces/common"
 import prisma from "../../shared/prisma"
 import fieldValidityChecker from "../../utils/fieldValidityChecker"
@@ -10,6 +10,24 @@ import { blogSearchableFields, blogSortableFields } from "./Blog.constants"
 import { IBlog } from "./Blog.interfaces"
 
 const createPost = async (user: TAuthUser, data: IBlog) => {
+    const tags = data.tags.filter((t) => uuidRegex.test(t));
+    if (data.tags.length !== tags.length) {
+        const newTags = data.tags.filter((t) => !uuidRegex.test(t));
+        if (newTags.length) {
+            await prisma.tag.createMany({
+                data: newTags.map((t) => ({ name: t }))
+            })
+            const addedTags = await prisma.tag.findMany({
+                where: {
+                    name: {
+                        in: newTags
+                    }
+                }
+            })
+            addedTags.forEach((newTag) => tags.push(newTag.id))
+        }
+    }
+
     let slug = generateSlug(data.title)
     const isExist = await prisma.blog.findFirst({
         where: {
@@ -19,11 +37,15 @@ const createPost = async (user: TAuthUser, data: IBlog) => {
     if (isExist) {
         slug = `${slug}-${Date.now()}`
     }
+
     const result = await prisma.blog.create({
         data: {
             ...data,
             slug,
-            author_id: user.id
+            author_id: user.id,
+            tags: {
+                connect: tags.map((t) => ({ id: t }))
+            }
         }
     })
     return result
@@ -100,9 +122,15 @@ const getPosts = async (query: Record<string, any>) => {
                 select: {
                     ...userSelectedFields
                 }
-            }
+            },
+            tags: true
         }
     });
+
+    const formattedResult = result.map((item) => ({
+        ...item,
+        tags: item.tags.map(tag => tag.name)
+    }))
 
     const total = await prisma.blog.count({ where: whereConditons });
 
@@ -112,11 +140,46 @@ const getPosts = async (query: Record<string, any>) => {
             limit: limitNumber,
             total,
         },
-        data: result,
+        data: formattedResult,
     };
 };
 
+const getSinglePost = async (id: string) => {
+    const result = await prisma.blog.findUniqueOrThrow({
+        where: {
+            id
+        },
+        include: {
+            tags: true
+        }
+    })
+    const formattedResult = {
+        ...result,
+        tags: result.tags?.map(tag => tag.id)
+    }
+    return formattedResult
+}
+
 const updatePost = async (id: string, payload: Record<string, any>) => {
+    const { tags: inputTags, ...rest } = payload
+    console.log("input tags: ", inputTags);
+    const tags = inputTags.filter((t: string) => uuidRegex.test(t));
+    if (inputTags?.length !== tags.length) {
+        const newTags = inputTags.filter((t: string) => !uuidRegex.test(t));
+        if (newTags.length) {
+            await prisma.tag.createMany({
+                data: newTags.map((t: string) => ({ name: t }))
+            })
+            const addedTags = await prisma.tag.findMany({
+                where: {
+                    name: {
+                        in: newTags
+                    }
+                }
+            })
+            addedTags.forEach((newTag) => tags.push(newTag.id))
+        }
+    }
     if (payload.title) {
         let slug = generateSlug(payload.title)
         const isExist = await prisma.blog.findFirst({
@@ -133,13 +196,21 @@ const updatePost = async (id: string, payload: Record<string, any>) => {
         where: {
             id,
         },
-        data: payload,
+        data: {
+            ...rest,
+            ...(tags && tags.length > 0) && {
+                tags: {
+                    set: tags.map((tagId: string) => ({ id: tagId }))
+                }
+            },
+        },
         include: {
             author: {
                 select: {
                     ...userSelectedFields
                 }
-            }
+            },
+            tags: true
         }
     });
     return result;
@@ -163,5 +234,6 @@ export const BlogServices = {
     createPost,
     getPosts,
     updatePost,
-    deletePosts
+    deletePosts,
+    getSinglePost
 }

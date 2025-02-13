@@ -26,6 +26,26 @@ const getProperties = catchAsync(async (req, res, next) => {
   });
 });
 
+const getSingleProperty = catchAsync(async (req, res, next) => {
+  const result = await PropertyServices.getSingleProperty(req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Property retrieved successfully",
+    data: result,
+  });
+});
+
+const updateProperty = catchAsync(async (req, res, next) => {
+  const result = await PropertyServices.updateProperty(req.params.id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Property updated successfully",
+    data: result,
+  });
+});
+
 const deleteProperties = catchAsync(async (req, res, next) => {
   const result = await PropertyServices.deleteProperties(req.body);
   sendResponse(res, {
@@ -39,5 +59,7 @@ const deleteProperties = catchAsync(async (req, res, next) => {
 export const PropertyControllers = {
   createProperty,
   getProperties,
-  deleteProperties
+  deleteProperties,
+  updateProperty,
+  getSingleProperty
 };

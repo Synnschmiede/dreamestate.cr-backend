@@ -13,6 +13,12 @@ router.get(
     FeatureControllers.getFeatures
 );
 
+router.get(
+    "/feature-groups",
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    FeatureControllers.getFeatureGroups
+);
+
 router.post(
     "/add-feature",
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
@@ -20,11 +26,11 @@ router.post(
     FeatureControllers.addFeature
 );
 
-router.patch(
-    "/:id",
+router.post(
+    "/add-feature-group",
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-    validateRequest(FeatureValidations.updateFeatureValidationSchema),
-    FeatureControllers.updateFeature
+    validateRequest(FeatureValidations.addFeatureGroupValidationSchema),
+    FeatureControllers.addFeatureGroup
 );
 
 router.delete(
@@ -32,6 +38,26 @@ router.delete(
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     validateRequest(FeatureValidations.deleteFeaturesValidationSchema),
     FeatureControllers.deleteFeatures
+);
+
+router.delete(
+    "/delete-group/:id",
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    FeatureControllers.deleteFeatureGroup
+);
+
+router.patch(
+    "/feature-group/:id",
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    validateRequest(FeatureValidations.updateFeatureGroupValidationSchema),
+    FeatureControllers.updateFeatureGroup
+);
+
+router.patch(
+    "/:id",
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    validateRequest(FeatureValidations.updateFeatureValidationSchema),
+    FeatureControllers.updateFeature
 );
 
 export const FeatureRoutes = router;

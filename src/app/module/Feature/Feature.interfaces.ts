@@ -1,4 +1,4 @@
 export interface IFeature {
-    title: string;
-    type: string;
+    name: string;
+    feature_group_id: string;
 }

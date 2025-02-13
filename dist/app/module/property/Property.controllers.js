@@ -36,6 +36,24 @@ const getProperties = (0, catchAsync_1.default)((req, res, next) => __awaiter(vo
         data: result.data,
     });
 }));
+const getSingleProperty = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Property_services_1.PropertyServices.getSingleProperty(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Property retrieved successfully",
+        data: result,
+    });
+}));
+const updateProperty = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Property_services_1.PropertyServices.updateProperty(req.params.id, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Property updated successfully",
+        data: result,
+    });
+}));
 const deleteProperties = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Property_services_1.PropertyServices.deleteProperties(req.body);
     (0, sendResponse_1.default)(res, {
@@ -48,5 +66,7 @@ const deleteProperties = (0, catchAsync_1.default)((req, res, next) => __awaiter
 exports.PropertyControllers = {
     createProperty,
     getProperties,
-    deleteProperties
+    deleteProperties,
+    updateProperty,
+    getSingleProperty
 };

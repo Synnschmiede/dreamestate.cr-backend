@@ -11,7 +11,8 @@ const createPostValidationSchema = z.object({
         content: z
             .string({ invalid_type_error: "Content should be a text" })
             .min(1, { message: "Content is required" }),
-        tags: z.string({ invalid_type_error: "Tags should be a comma seaparated text" }).optional(),
+        tags: z.array(z
+            .string({ invalid_type_error: "Tag should be a text" })).default([]),
         thumbnail: z.string({ invalid_type_error: "Thumbnail should be a path/url" }).optional(),
         images: z.array(z.string({ invalid_type_error: "Image should be a path/url" })).optional(),
     }).strict()
@@ -28,7 +29,8 @@ const updatePostValidationSchema = z.object({
         content: z
             .string({ invalid_type_error: "Content should be a text" })
             .min(1, { message: "Content is required" }).optional(),
-        tags: z.string({ invalid_type_error: "Tags should be a comma seaparated text" }).optional(),
+        tags: z.array(z
+            .string({ invalid_type_error: "Tag should be a text" })).default([]).optional(),
         thumbnail: z.string({ invalid_type_error: "Thumbnail should be a path/url" }).optional(),
         images: z.array(z.string({ invalid_type_error: "Image should be a path/url" })).optional(),
         published: z.boolean({ invalid_type_error: "Published should be true or false" }).optional(),

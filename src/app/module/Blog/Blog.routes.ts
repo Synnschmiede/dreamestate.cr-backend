@@ -33,4 +33,9 @@ router.delete(
     BlogControllers.deletePosts
 );
 
+router.get(
+    "/post/:id",
+    BlogControllers.getSinglePost
+);
+
 export const BlogRoutes = router;

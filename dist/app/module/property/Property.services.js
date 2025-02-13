@@ -8,12 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PropertyServices = void 0;
-const client_1 = require("@prisma/client");
 const common_1 = require("../../constants/common");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const fieldValidityChecker_1 = __importDefault(require("../../utils/fieldValidityChecker"));
@@ -21,68 +31,76 @@ const generateSlug_1 = require("../../utils/generateSlug");
 const pagination_1 = __importDefault(require("../../utils/pagination"));
 const Property_constants_1 = require("./Property.constants");
 const createProperty = (user, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const { contact_info, location, features, property_details } = data;
-    const propertyObj = {
+    var _a, _b, _c, _d;
+    const property = {
+        user_id: user.id,
         title: data.title,
         slug: (0, generateSlug_1.generateSlug)(data.title),
-        price: data.price,
-        user_id: (user === null || user === void 0 ? void 0 : user.id) || null,
+        description: data.description || null,
         feature_image: data.feature_image || null,
-        description: (data === null || data === void 0 ? void 0 : data.description) || null,
-        property_type: (data === null || data === void 0 ? void 0 : data.property_type) || null,
-        status: (data === null || data === void 0 ? void 0 : data.status) || client_1.PropertyStatus.AVAILABLE,
-        images: data.images,
-        tags: (data === null || data === void 0 ? void 0 : data.tags) || [],
-        property_details: {
-            area_size: property_details === null || property_details === void 0 ? void 0 : property_details.area_size,
-            bedroom: property_details === null || property_details === void 0 ? void 0 : property_details.bedroom,
-            bathroom: property_details === null || property_details === void 0 ? void 0 : property_details.bathroom,
-            garage: property_details === null || property_details === void 0 ? void 0 : property_details.garage,
-            available_from: property_details === null || property_details === void 0 ? void 0 : property_details.available_from,
-            property_lot_size: property_details === null || property_details === void 0 ? void 0 : property_details.property_lot_size,
-            year_build: property_details === null || property_details === void 0 ? void 0 : property_details.year_build,
-            structure_type: property_details === null || property_details === void 0 ? void 0 : property_details.structure_type,
-            price_info: property_details === null || property_details === void 0 ? void 0 : property_details.price_info,
-            room: property_details === null || property_details === void 0 ? void 0 : property_details.room,
-            garage_size: property_details === null || property_details === void 0 ? void 0 : property_details.garage_size,
-        },
-        features: {
-            interior_details: features === null || features === void 0 ? void 0 : features.interior_details,
-            outdoor_details: features === null || features === void 0 ? void 0 : features.outdoor_details,
-            utilities: features === null || features === void 0 ? void 0 : features.utilities,
-            other_features: features === null || features === void 0 ? void 0 : features.other_features,
-        },
+        property_type: data.property_type || null,
+        price: data.price,
     };
-    const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        let createdContactInfo;
-        if (contact_info) {
-            createdContactInfo = yield tx.contactInfo.create({
-                data: {
-                    name: contact_info.name,
-                    email: contact_info.email,
-                    phone: contact_info.phone || null,
-                },
-            });
+    if (data.status) {
+        property.status = data.status;
+    }
+    if (data.images && data.images.length > 0) {
+        property.images = data.images;
+    }
+    if (data.tags && data.tags.length > 0) {
+        property.tags = data.tags;
+    }
+    if (data.features && data.features.length > 0) {
+        property.features = data.features;
+    }
+    if (data.property_details) {
+        property.property_details = data.property_details;
+    }
+    if (data.location) {
+        property.location = data.location;
+    }
+    const contactInfo = yield prisma_1.default.contactInfo.upsert({
+        where: {
+            email: data.contact_info.email
+        },
+        update: {
+            name: data.contact_info.name,
+            email: data.contact_info.email,
+            phone: data.contact_info.phone
+        },
+        create: {
+            name: data.contact_info.name,
+            email: data.contact_info.email,
+            phone: ((_a = data.contact_info) === null || _a === void 0 ? void 0 : _a.phone) || null
         }
-        let createdLoacation;
-        if (location) {
-            createdLoacation = yield tx.location.create({
-                data: {
-                    city: location.city,
-                    state: location.state,
-                    country: location.country,
-                    street: location.street,
-                    postal_code: location.postal_code || null,
-                    latitude: location.latitude || null,
-                    longitude: location.longitude || null,
-                },
+    });
+    if (contactInfo.id) {
+        property.contact_info_id = contactInfo.id;
+    }
+    const tags = ((_b = data.tags) === null || _b === void 0 ? void 0 : _b.filter((t) => common_1.uuidRegex.test(t))) || [];
+    if (data.tags && ((_c = data.tags) === null || _c === void 0 ? void 0 : _c.length) !== tags.length) {
+        const newTags = data.tags.filter((t) => !common_1.uuidRegex.test(t));
+        if (newTags.length) {
+            yield prisma_1.default.tag.createMany({
+                data: newTags.map((t) => ({ name: t }))
             });
+            const addedTags = yield prisma_1.default.tag.findMany({
+                where: {
+                    name: {
+                        in: newTags
+                    }
+                }
+            });
+            addedTags.forEach((newTag) => tags.push(newTag.id));
         }
-        const property = yield tx.property.create({
-            data: Object.assign(Object.assign({}, propertyObj), { contact_info_id: (createdContactInfo === null || createdContactInfo === void 0 ? void 0 : createdContactInfo.id) || null, location_id: (createdLoacation === null || createdLoacation === void 0 ? void 0 : createdLoacation.id) || null }),
-        });
-        return Object.assign({}, property);
-    }));
+    }
+    const result = yield prisma_1.default.property.create({
+        data: Object.assign(Object.assign({}, property), { tags: {
+                connect: tags === null || tags === void 0 ? void 0 : tags.map((tagId) => ({ id: tagId }))
+            }, features: {
+                connect: (_d = data.features) === null || _d === void 0 ? void 0 : _d.map((featureId) => ({ id: featureId }))
+            } })
+    });
     return result;
 });
 const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () {
@@ -129,20 +147,20 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
     }
-    if (city && city !== "ALL") {
-        const cities = city.split(",");
-        const refineCities = cities.filter((c) => c !== "ALL");
-        andConditions.push({
-            location: {
-                OR: refineCities.map((city) => ({
-                    city: {
-                        contains: city,
-                        mode: "insensitive",
-                    },
-                })),
-            },
-        });
-    }
+    // if (city && city !== "ALL") {
+    //   const cities = city.split(",");
+    //   const refineCities = cities.filter((c: string) => c !== "ALL");
+    //   andConditions.push({
+    //     location: {
+    //       OR: refineCities.map((city: string) => ({
+    //         city: {
+    //           contains: city,
+    //           mode: "insensitive",
+    //         },
+    //       })),
+    //     },
+    //   });
+    // }
     const whereConditons = {
         AND: andConditions,
     };
@@ -155,6 +173,19 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
         },
         select: Object.assign({}, Property_constants_1.propertySelectedFields),
     });
+    const formattedResult = result.map((item) => (Object.assign(Object.assign({}, item), { tags: item.tags.map(tag => tag.name), features: item.features.reduce((acc, feature) => {
+            const group = acc.find((g) => g.group_name === feature.feature_group.name);
+            if (group) {
+                group.features.push(feature.name);
+            }
+            else {
+                acc.push({
+                    group_name: feature.feature_group.name,
+                    features: [feature.name]
+                });
+            }
+            return acc;
+        }, []) })));
     const total = yield prisma_1.default.property.count({ where: whereConditons });
     return {
         meta: {
@@ -162,8 +193,90 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
             limit: limitNumber,
             total,
         },
-        data: result,
+        data: formattedResult,
     };
+});
+const getSingleProperty = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const result = yield prisma_1.default.property.findUniqueOrThrow({
+        where: {
+            id
+        },
+        include: {
+            tags: true,
+            features: true,
+            contact_info: true
+        }
+    });
+    const formattedResult = Object.assign(Object.assign({}, result), { tags: (_a = result.tags) === null || _a === void 0 ? void 0 : _a.map(tag => tag.id) });
+    return formattedResult;
+});
+const updateProperty = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { contact_info, tags: inputTags, features, created_at, updated_at } = payload, rest = __rest(payload, ["contact_info", "tags", "features", "created_at", "updated_at"]);
+    const property = yield prisma_1.default.property.findUniqueOrThrow({
+        where: {
+            id
+        },
+        include: {
+            contact_info: true
+        }
+    });
+    if ((contact_info === null || contact_info === void 0 ? void 0 : contact_info.email) && (contact_info === null || contact_info === void 0 ? void 0 : contact_info.email) !== ((_a = property.contact_info) === null || _a === void 0 ? void 0 : _a.email)) {
+        const contactInfo = yield prisma_1.default.contactInfo.upsert({
+            where: {
+                email: payload.contact_info.email
+            },
+            update: {
+                name: payload.contact_info.name,
+                email: payload.contact_info.email,
+                phone: payload.contact_info.phone
+            },
+            create: {
+                name: payload.contact_info.name,
+                email: payload.contact_info.email,
+                phone: ((_b = payload.contact_info) === null || _b === void 0 ? void 0 : _b.phone) || null
+            }
+        });
+        if (contactInfo.id) {
+            payload.contact_info_id = contactInfo.id;
+        }
+    }
+    if (payload.title && payload.title !== property.title) {
+        payload.slug = (0, generateSlug_1.generateSlug)(payload.title);
+    }
+    const tags = (inputTags === null || inputTags === void 0 ? void 0 : inputTags.filter((t) => common_1.uuidRegex.test(t))) || [];
+    if (inputTags && (inputTags === null || inputTags === void 0 ? void 0 : inputTags.length) !== tags.length) {
+        const newTags = inputTags.filter((t) => !common_1.uuidRegex.test(t));
+        if (newTags.length) {
+            yield prisma_1.default.tag.createMany({
+                data: newTags.map((t) => ({ name: t }))
+            });
+            const addedTags = yield prisma_1.default.tag.findMany({
+                where: {
+                    name: {
+                        in: newTags
+                    }
+                }
+            });
+            addedTags.forEach((newTag) => tags.push(newTag.id));
+        }
+    }
+    const result = yield prisma_1.default.property.update({
+        where: {
+            id
+        },
+        data: Object.assign(Object.assign(Object.assign({}, rest), (tags && tags.length > 0) && {
+            tags: {
+                set: tags.map((tagId) => ({ id: tagId }))
+            }
+        }), (features && features.length > 0) && {
+            features: {
+                set: features.map((featureId) => ({ id: featureId }))
+            }
+        })
+    });
+    return result;
 });
 const deleteProperties = (_a) => __awaiter(void 0, [_a], void 0, function* ({ ids }) {
     const result = yield prisma_1.default.property.deleteMany({
@@ -181,5 +294,7 @@ const deleteProperties = (_a) => __awaiter(void 0, [_a], void 0, function* ({ id
 exports.PropertyServices = {
     createProperty,
     getProperties,
-    deleteProperties
+    deleteProperties,
+    updateProperty,
+    getSingleProperty
 };

@@ -31,10 +31,23 @@ exports.propertySelectedFields = {
     images: true,
     property_type: true,
     status: true,
-    tags: true,
+    tags: {
+        select: {
+            name: true
+        }
+    },
     documents: true,
     property_details: true,
-    features: true,
+    features: {
+        select: {
+            name: true,
+            feature_group: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    },
     contact_info: true,
     location: true,
     created_at: true,

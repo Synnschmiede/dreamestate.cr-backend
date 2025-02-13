@@ -15,4 +15,5 @@ router.post("/post", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1
 router.get("/posts", Blog_controllers_1.BlogControllers.getPosts);
 router.patch("/post/:id", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(Blog_validations_1.BlogValidations.updatePostValidationSchema), Blog_controllers_1.BlogControllers.updatePost);
 router.delete("/delete-posts", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(Blog_validations_1.BlogValidations.deletePostValidationSchema), Blog_controllers_1.BlogControllers.deletePosts);
+router.get("/post/:id", Blog_controllers_1.BlogControllers.getSinglePost);
 exports.BlogRoutes = router;

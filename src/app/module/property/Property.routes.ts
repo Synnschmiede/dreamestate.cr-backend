@@ -23,4 +23,16 @@ router.delete(
   PropertyControllers.deleteProperties
 );
 
+router.patch(
+  "/update/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  validateRequest(PropertyValidations.updatePropertyValidationSchema),
+  PropertyControllers.updateProperty
+);
+
+router.get(
+  "/:id",
+  PropertyControllers.getSingleProperty
+);
+
 export const PropertyRoutes = router;

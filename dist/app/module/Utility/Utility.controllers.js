@@ -12,61 +12,61 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlogControllers = void 0;
+exports.UtilityControllers = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
-const Blog_services_1 = require("./Blog.services");
-const createPost = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Blog_services_1.BlogServices.createPost(req.user, req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.CREATED,
-        success: true,
-        message: "Post created successfully",
-        data: result,
-    });
-}));
-const getPosts = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Blog_services_1.BlogServices.getPosts(req.query);
+const Utility_services_1 = require("./Utility.services");
+const getUtilities = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Utility_services_1.UtilityServices.getUtilities();
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Posts retrieved successfully",
+        message: "Utilities retrieved successfully",
+        data: result,
+    });
+}));
+const addTag = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Utility_services_1.UtilityServices.addTag(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Tag created successfully",
+        data: result,
+    });
+}));
+const getTags = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Utility_services_1.UtilityServices.getTags(req.query);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Tags retrieved successfully",
         meta: result.meta,
         data: result.data,
     });
 }));
-const getSinglePost = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Blog_services_1.BlogServices.getSinglePost(req.params.id);
+const updateTag = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Utility_services_1.UtilityServices.updateTag(req.params.id, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Post retrieved successfully",
+        message: "Tag updated successfully",
         data: result,
     });
 }));
-const updatePost = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Blog_services_1.BlogServices.updatePost(req.params.id, req.body);
+const deleteTags = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Utility_services_1.UtilityServices.deleteTags(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Posts updated successfully",
+        message: "Tags deleted successfully",
         data: result,
     });
 }));
-const deletePosts = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Blog_services_1.BlogServices.deletePosts(req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "Posts deleted successfully",
-        data: result,
-    });
-}));
-exports.BlogControllers = {
-    createPost,
-    getPosts,
-    updatePost,
-    deletePosts,
-    getSinglePost
+exports.UtilityControllers = {
+    addTag,
+    getTags,
+    updateTag,
+    deleteTags,
+    getUtilities
 };

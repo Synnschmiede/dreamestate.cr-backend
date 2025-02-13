@@ -1,5 +1,5 @@
-import { Prisma, PropertyStatus } from "@prisma/client";
-import { sortOrderType } from "../../constants/common";
+import { Prisma } from "@prisma/client";
+import { sortOrderType, uuidRegex } from "../../constants/common";
 import { TAuthUser } from "../../interfaces/common";
 import prisma from "../../shared/prisma";
 import fieldValidityChecker from "../../utils/fieldValidityChecker";
@@ -13,79 +13,83 @@ import {
 import { IProperty } from "./Property.interfaces";
 
 const createProperty = async (user: TAuthUser, data: IProperty) => {
-  const { contact_info, location, features, property_details } = data;
-
-  const propertyObj = {
+  const property: any = {
+    user_id: user.id,
     title: data.title,
     slug: generateSlug(data.title),
-    price: data.price,
-    user_id: user?.id || null,
+    description: data.description || null,
     feature_image: data.feature_image || null,
-    description: data?.description || null,
-    property_type: data?.property_type || null,
-    status: data?.status || PropertyStatus.AVAILABLE,
-    images: data.images,
-    tags: data?.tags || [],
-    property_details: {
-      area_size: property_details?.area_size,
-      bedroom: property_details?.bedroom,
-      bathroom: property_details?.bathroom,
-      garage: property_details?.garage,
-      available_from: property_details?.available_from,
-      property_lot_size: property_details?.property_lot_size,
-      year_build: property_details?.year_build,
-      structure_type: property_details?.structure_type,
-      price_info: property_details?.price_info,
-      room: property_details?.room,
-      garage_size: property_details?.garage_size,
+    property_type: data.property_type || null,
+    price: data.price,
+  }
+
+  if (data.status) {
+    property.status = data.status
+  }
+  if (data.images && data.images.length > 0) {
+    property.images = data.images
+  }
+  if (data.tags && data.tags.length > 0) {
+    property.tags = data.tags;
+  }
+  if (data.features && data.features.length > 0) {
+    property.features = data.features;
+  }
+  if (data.property_details) {
+    property.property_details = data.property_details
+  }
+  if (data.location) {
+    property.location = data.location
+  }
+
+  const contactInfo = await prisma.contactInfo.upsert({
+    where: {
+      email: data.contact_info.email
     },
-    features: {
-      interior_details: features?.interior_details,
-      outdoor_details: features?.outdoor_details,
-      utilities: features?.utilities,
-      other_features: features?.other_features,
+    update: {
+      name: data.contact_info.name,
+      email: data.contact_info.email,
+      phone: data.contact_info.phone
     },
-  };
-
-  const result = await prisma.$transaction(async (tx) => {
-    let createdContactInfo;
-    if (contact_info) {
-      createdContactInfo = await tx.contactInfo.create({
-        data: {
-          name: contact_info.name,
-          email: contact_info.email,
-          phone: contact_info.phone || null,
-        },
-      });
+    create: {
+      name: data.contact_info.name,
+      email: data.contact_info.email,
+      phone: data.contact_info?.phone || null
     }
+  })
+  if (contactInfo.id) {
+    property.contact_info_id = contactInfo.id
+  }
 
-    let createdLoacation;
-    if (location) {
-      createdLoacation = await tx.location.create({
-        data: {
-          city: location.city,
-          state: location.state,
-          country: location.country,
-          street: location.street,
-          postal_code: location.postal_code || null,
-          latitude: location.latitude || null,
-          longitude: location.longitude || null,
-        },
-      });
+  const tags = data.tags?.filter((t) => uuidRegex.test(t)) || [];
+  if (data.tags && data.tags?.length !== tags.length) {
+    const newTags = data.tags.filter((t) => !uuidRegex.test(t));
+    if (newTags.length) {
+      await prisma.tag.createMany({
+        data: newTags.map((t) => ({ name: t }))
+      })
+      const addedTags = await prisma.tag.findMany({
+        where: {
+          name: {
+            in: newTags
+          }
+        }
+      })
+      addedTags.forEach((newTag) => tags.push(newTag.id))
     }
+  }
 
-    const property = await tx.property.create({
-      data: {
-        ...propertyObj,
-        contact_info_id: createdContactInfo?.id || null,
-        location_id: createdLoacation?.id || null,
-      },
-    });
-
-    return {
+  const result = await prisma.property.create({
+    data: {
       ...property,
-    };
-  });
+      tags: {
+        connect: tags?.map((tagId: string) => ({ id: tagId }))
+      },
+      features: {
+        connect: data.features?.map((featureId: string) => ({ id: featureId }))
+      }
+    }
+  })
 
   return result;
 };
@@ -151,20 +155,20 @@ const getProperties = async (query: Record<string, any>) => {
     });
   }
 
-  if (city && city !== "ALL") {
-    const cities = city.split(",");
-    const refineCities = cities.filter((c: string) => c !== "ALL");
-    andConditions.push({
-      location: {
-        OR: refineCities.map((city: string) => ({
-          city: {
-            contains: city,
-            mode: "insensitive",
-          },
-        })),
-      },
-    });
-  }
+  // if (city && city !== "ALL") {
+  //   const cities = city.split(",");
+  //   const refineCities = cities.filter((c: string) => c !== "ALL");
+  //   andConditions.push({
+  //     location: {
+  //       OR: refineCities.map((city: string) => ({
+  //         city: {
+  //           contains: city,
+  //           mode: "insensitive",
+  //         },
+  //       })),
+  //     },
+  //   });
+  // }
 
   const whereConditons = {
     AND: andConditions,
@@ -182,6 +186,23 @@ const getProperties = async (query: Record<string, any>) => {
     },
   });
 
+  const formattedResult = result.map((item) => ({
+    ...item,
+    tags: item.tags.map(tag => tag.name),
+    features: item.features.reduce((acc: any, feature: any) => {
+      const group = acc.find((g: any) => g.group_name === feature.feature_group.name);
+      if (group) {
+        group.features.push(feature.name);
+      } else {
+        acc.push({
+          group_name: feature.feature_group.name,
+          features: [feature.name]
+        });
+      }
+      return acc;
+    }, []),
+  }))
+
   const total = await prisma.property.count({ where: whereConditons });
 
   return {
@@ -190,9 +211,103 @@ const getProperties = async (query: Record<string, any>) => {
       limit: limitNumber,
       total,
     },
-    data: result,
+    data: formattedResult,
   };
 };
+
+const getSingleProperty = async (id: string) => {
+  const result = await prisma.property.findUniqueOrThrow({
+    where: {
+      id
+    },
+    include: {
+      tags: true,
+      features: true,
+      contact_info: true
+    }
+  })
+  const formattedResult = {
+    ...result,
+    tags: result.tags?.map(tag => tag.id)
+  }
+  return formattedResult
+}
+
+const updateProperty = async (id: string, payload: Record<string, any>) => {
+  const { contact_info, tags: inputTags, features, created_at, updated_at, ...rest } = payload;
+  const property = await prisma.property.findUniqueOrThrow({
+    where: {
+      id
+    },
+    include: {
+      contact_info: true
+    }
+  })
+
+  if (contact_info?.email && contact_info?.email !== property.contact_info?.email) {
+    const contactInfo = await prisma.contactInfo.upsert({
+      where: {
+        email: payload.contact_info.email
+      },
+      update: {
+        name: payload.contact_info.name,
+        email: payload.contact_info.email,
+        phone: payload.contact_info.phone
+      },
+      create: {
+        name: payload.contact_info.name,
+        email: payload.contact_info.email,
+        phone: payload.contact_info?.phone || null
+      }
+    })
+    if (contactInfo.id) {
+      payload.contact_info_id = contactInfo.id
+    }
+  }
+
+  if (payload.title && payload.title !== property.title) {
+    payload.slug = generateSlug(payload.title)
+  }
+
+  const tags = inputTags?.filter((t: string) => uuidRegex.test(t)) || [];
+  if (inputTags && inputTags?.length !== tags.length) {
+    const newTags = inputTags.filter((t: string) => !uuidRegex.test(t));
+    if (newTags.length) {
+      await prisma.tag.createMany({
+        data: newTags.map((t: string) => ({ name: t }))
+      })
+      const addedTags = await prisma.tag.findMany({
+        where: {
+          name: {
+            in: newTags
+          }
+        }
+      })
+      addedTags.forEach((newTag) => tags.push(newTag.id))
+    }
+  }
+
+  const result = await prisma.property.update({
+    where: {
+      id
+    },
+    data: {
+      ...rest,
+      ...(tags && tags.length > 0) && {
+        tags: {
+          set: tags.map((tagId: string) => ({ id: tagId }))
+        }
+      },
+      ...(features && features.length > 0) && {
+        features: {
+          set: features.map((featureId: string) => ({ id: featureId }))
+        }
+      }
+    }
+  })
+
+  return result
+}
 
 const deleteProperties = async ({ ids }: { ids: string[] }) => {
   const result = await prisma.property.deleteMany({
@@ -211,5 +326,7 @@ const deleteProperties = async ({ ids }: { ids: string[] }) => {
 export const PropertyServices = {
   createProperty,
   getProperties,
-  deleteProperties
+  deleteProperties,
+  updateProperty,
+  getSingleProperty
 };

@@ -14,4 +14,6 @@ const router = (0, express_1.Router)();
 router.get("/", Property_controllers_1.PropertyControllers.getProperties);
 router.post("/add-property", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(Property_validations_1.PropertyValidations.createPropertyValidationSchema), Property_controllers_1.PropertyControllers.createProperty);
 router.delete("/delete-properties", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(Property_validations_1.PropertyValidations.deletePropertyValidationSchema), Property_controllers_1.PropertyControllers.deleteProperties);
+router.patch("/update/:id", (0, auth_1.default)(client_1.UserRole.SUPER_ADMIN, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(Property_validations_1.PropertyValidations.updatePropertyValidationSchema), Property_controllers_1.PropertyControllers.updateProperty);
+router.get("/:id", Property_controllers_1.PropertyControllers.getSingleProperty);
 exports.PropertyRoutes = router;

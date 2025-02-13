@@ -45,44 +45,29 @@ model Property {
   property_type    PropertyType?
   status           PropertyStatus @default(AVAILABLE)
   images           String[]       @default([])
-  tags             String[]       @default([])
   documents        String[]       @default([])
   property_details Json?
-  features         Json?
-  contact_info_id  String?        @unique
-  location_id      String?        @unique
+  location         Json?
+  contact_info_id  String?
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt
 
   uploaded_by  User?        @relation(fields: [user_id], references: [id])
   contact_info ContactInfo? @relation(fields: [contact_info_id], references: [id])
-  location     Location?    @relation(fields: [location_id], references: [id])
+  tags         Tag[]        @relation("PropertyTag")
+  features     Feature[]    @relation("PropertyFeature")
 
   @@map("properties")
 }
 
 model ContactInfo {
-  id       String    @id @default(uuid())
+  id       String     @id @default(uuid())
   name     String
-  email    String
+  email    String     @unique
   phone    String?
-  Property Property?
+  Property Property[]
 
   @@map("contact_info")
-}
-
-model Location {
-  id          String    @id @default(uuid())
-  city        String
-  state       String
-  country     String
-  street      String
-  postal_code String?
-  latitude    Int?
-  longitude   Int?
-  Property    Property?
-
-  @@map("locations")
 }
 
 model Blog {
@@ -90,7 +75,6 @@ model Blog {
   title      String
   slug       String   @unique
   content    String
-  tags       String?
   thumbnail  String?
   images     String[] @default([])
   author_id  String
@@ -99,19 +83,45 @@ model Blog {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  author User @relation(fields: [author_id], references: [id])
+  tags   Tag[] @relation("BlogTag")
+  author User  @relation(fields: [author_id], references: [id])
 
   @@map("blogs")
 }
 
+model FeatureGroup {
+  id         String    @id @default(uuid())
+  name       String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  feature    Feature[]
+
+  @@map("feature_groups")
+}
+
 model Feature {
+  id               String   @id @default(uuid())
+  name             String
+  feature_group_id String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  feature_group FeatureGroup @relation(fields: [feature_group_id], references: [id])
+  properties    Property[]   @relation("PropertyFeature")
+
+  @@map("features")
+}
+
+model Tag {
   id         String   @id @default(uuid())
-  title      String
-  type       String
+  name       String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("features")
+  properties Property[] @relation("PropertyTag")
+  blogs      Blog[]     @relation("BlogTag")
+
+  @@map("tags")
 }
 
 model File {
