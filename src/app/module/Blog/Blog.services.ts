@@ -161,9 +161,8 @@ const getSinglePost = async (id: string) => {
 }
 
 const updatePost = async (id: string, payload: Record<string, any>) => {
-    const { tags: inputTags, ...rest } = payload
-    console.log("input tags: ", inputTags);
-    const tags = inputTags.filter((t: string) => uuidRegex.test(t));
+    const { tags: inputTags = [], ...rest } = payload
+    const tags = inputTags?.filter((t: string) => uuidRegex.test(t)) || [];
     if (inputTags?.length !== tags.length) {
         const newTags = inputTags.filter((t: string) => !uuidRegex.test(t));
         if (newTags.length) {

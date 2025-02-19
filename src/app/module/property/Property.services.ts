@@ -104,8 +104,10 @@ const getProperties = async (query: Record<string, any>) => {
     id,
     slug,
     category,
-    city,
+    feature,
+    featured
   } = query;
+
   if (sortBy) {
     fieldValidityChecker(propertySortableFields, sortBy);
   }
@@ -155,6 +157,12 @@ const getProperties = async (query: Record<string, any>) => {
     });
   }
 
+  if (featured) {
+    andConditions.push({
+      featured: featured === 'true' ? true : false
+    })
+  }
+
   // if (city && city !== "ALL") {
   //   const cities = city.split(",");
   //   const refineCities = cities.filter((c: string) => c !== "ALL");
@@ -173,6 +181,19 @@ const getProperties = async (query: Record<string, any>) => {
   const whereConditons = {
     AND: andConditions,
   };
+
+  if (feature) {
+    const features = feature.split(",");
+    andConditions.push({
+      features: {
+        some: {
+          name: {
+            in: features
+          }
+        }
+      }
+    })
+  }
 
   const result = await prisma.property.findMany({
     where: whereConditons,

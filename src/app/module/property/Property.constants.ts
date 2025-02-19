@@ -62,4 +62,5 @@ export const propertySelectedFields = {
       role: true,
     },
   },
+  featured: true
 };

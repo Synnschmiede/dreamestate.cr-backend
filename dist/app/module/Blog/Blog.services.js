@@ -145,9 +145,8 @@ const getSinglePost = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return formattedResult;
 });
 const updatePost = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { tags: inputTags } = payload, rest = __rest(payload, ["tags"]);
-    console.log("input tags: ", inputTags);
-    const tags = inputTags.filter((t) => common_1.uuidRegex.test(t));
+    const { tags: inputTags = [] } = payload, rest = __rest(payload, ["tags"]);
+    const tags = (inputTags === null || inputTags === void 0 ? void 0 : inputTags.filter((t) => common_1.uuidRegex.test(t))) || [];
     if ((inputTags === null || inputTags === void 0 ? void 0 : inputTags.length) !== tags.length) {
         const newTags = inputTags.filter((t) => !common_1.uuidRegex.test(t));
         if (newTags.length) {

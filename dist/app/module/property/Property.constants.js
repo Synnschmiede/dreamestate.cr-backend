@@ -62,4 +62,5 @@ exports.propertySelectedFields = {
             role: true,
         },
     },
+    featured: true
 };

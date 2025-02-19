@@ -51,6 +51,7 @@ model Property {
   contact_info_id  String?
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt
+  featured         Boolean        @default(false)
 
   uploaded_by  User?        @relation(fields: [user_id], references: [id])
   contact_info ContactInfo? @relation(fields: [contact_info_id], references: [id])

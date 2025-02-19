@@ -104,7 +104,7 @@ const createProperty = (user, data) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm, page, limit, sortBy, sortOrder, id, slug, category, city, } = query;
+    const { searchTerm, page, limit, sortBy, sortOrder, id, slug, category, feature, featured } = query;
     if (sortBy) {
         (0, fieldValidityChecker_1.default)(Property_constants_1.propertySortableFields, sortBy);
     }
@@ -147,6 +147,11 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
     }
+    if (featured) {
+        andConditions.push({
+            featured: featured === 'true' ? true : false
+        });
+    }
     // if (city && city !== "ALL") {
     //   const cities = city.split(",");
     //   const refineCities = cities.filter((c: string) => c !== "ALL");
@@ -164,6 +169,18 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
     const whereConditons = {
         AND: andConditions,
     };
+    if (feature) {
+        const features = feature.split(",");
+        andConditions.push({
+            features: {
+                some: {
+                    name: {
+                        in: features
+                    }
+                }
+            }
+        });
+    }
     const result = yield prisma_1.default.property.findMany({
         where: whereConditons,
         skip,
