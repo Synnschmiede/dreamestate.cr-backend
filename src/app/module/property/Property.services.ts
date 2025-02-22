@@ -105,7 +105,7 @@ const getProperties = async (query: Record<string, any>) => {
     slug,
     category,
     feature,
-    featured
+    property
   } = query;
 
   if (sortBy) {
@@ -157,11 +157,26 @@ const getProperties = async (query: Record<string, any>) => {
     });
   }
 
-  if (featured) {
+  if (property && property === 'featured') {
     andConditions.push({
-      featured: featured === 'true' ? true : false
+      featured: true
     })
   }
+
+  if (property && property === 'available') {
+    andConditions.push({
+      status: 'AVAILABLE'
+    })
+  }
+
+  // if (property && property === 'available') {
+  //   andConditions.push({
+  //     property_details: {
+  //       path: ['available_from'],
+  //       lte: new Date()
+  //     }
+  //   })
+  // }
 
   // if (city && city !== "ALL") {
   //   const cities = city.split(",");

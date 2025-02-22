@@ -104,7 +104,7 @@ const createProperty = (user, data) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm, page, limit, sortBy, sortOrder, id, slug, category, feature, featured } = query;
+    const { searchTerm, page, limit, sortBy, sortOrder, id, slug, category, feature, property } = query;
     if (sortBy) {
         (0, fieldValidityChecker_1.default)(Property_constants_1.propertySortableFields, sortBy);
     }
@@ -147,11 +147,24 @@ const getProperties = (query) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
     }
-    if (featured) {
+    if (property && property === 'featured') {
         andConditions.push({
-            featured: featured === 'true' ? true : false
+            featured: true
         });
     }
+    if (property && property === 'available') {
+        andConditions.push({
+            status: 'AVAILABLE'
+        });
+    }
+    // if (property && property === 'available') {
+    //   andConditions.push({
+    //     property_details: {
+    //       path: ['available_from'],
+    //       lte: new Date()
+    //     }
+    //   })
+    // }
     // if (city && city !== "ALL") {
     //   const cities = city.split(",");
     //   const refineCities = cities.filter((c: string) => c !== "ALL");

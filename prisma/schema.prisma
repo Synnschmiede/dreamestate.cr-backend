@@ -181,4 +181,5 @@ enum PropertyStatus {
   AVAILABLE
   SOLD
   RENTED
+  UPCOMING
 }
