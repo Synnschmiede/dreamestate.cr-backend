@@ -9,13 +9,11 @@ const router = Router();
 
 router.get(
     "/",
-    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     FeatureControllers.getFeatures
 );
 
 router.get(
     "/feature-groups",
-    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     FeatureControllers.getFeatureGroups
 );
 

@@ -9,13 +9,11 @@ const router = Router();
 
 router.get(
     "/",
-    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     UtilityControllers.getUtilities
 );
 
 router.get(
     "/tag",
-    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     UtilityControllers.getTags
 );
 
